@@ -6,9 +6,12 @@
 package View;
 
 import Conexion.Conexion;
+import static Controllers.Multilista.lista;
 import Model.Empresa;
 import Model.Sistema;
 import Model.Usuario;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.*;
@@ -29,6 +32,9 @@ public class Configuracion extends javax.swing.JFrame {
      */
     private int IdEmpresa;
     private int IdVenta;
+    
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
 
     public Configuracion() {
         initComponents();
@@ -53,6 +59,9 @@ public class Configuracion extends javax.swing.JFrame {
 
         BtnGuardarE.setEnabled(false);
         BtnGuardarV.setEnabled(false);
+        
+        padre = new NodoDrogueria();
+        hijo = new NodoHijoDrogueria();
     }
 
     Usuario usuario = new Usuario();
@@ -80,42 +89,39 @@ public class Configuracion extends javax.swing.JFrame {
     }
 
     private void DatosEmpresa() {
-        String sql = "SELECT * FROM empresa";
-        try {
-            Statement st = cn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            if (rs.next()) {
-                IdEmpresa = rs.getInt("id_empresa");
-                TxtNombre.setText(rs.getString("nombre"));
-                TxtNit.setText(rs.getString("nit"));
-                TxtDireccion.setText(rs.getString("direccion"));
-                TxtTelefono.setText(rs.getString("telefono"));
-                TxtCorreo.setText(rs.getString("correo"));
+        NodoDrogueria buscar = lista.BuscarPadre(6);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                TxtNombre.setText(q.nombre);
+                TxtNit.setText(q.nit);
+                TxtDireccion.setText(q.direccion);
+                TxtTelefono.setText(String.valueOf(q.telefono));
+                TxtCorreo.setText(q.correo);
+                q = q.sig;
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Error" + ex);
         }
     }
 
     private void DatosVenta() {
-        String sql = "SELECT * FROM configuracion";
-        try {
-            Statement st = cn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            if (rs.next()) {
-                IdVenta = rs.getInt("id");
-                TxtIva.setText(String.valueOf(rs.getFloat("iva")));
-                int desc = rs.getInt("des");
+        NodoDrogueria buscar = lista.BuscarPadre(4);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                IdVenta = q.id_configuracion;
+                TxtIva.setText(String.valueOf(q.iva));
+                int desc = q.descuento;
                 if (desc == 1) {
                     CheckDesc.setSelected(true);
                 } else {
                     CheckDesc.setSelected(false);
                 }
-                TxtPor.setText(String.valueOf(rs.getFloat("por")));
+                TxtPor.setText(String.valueOf(q.porcentaje));
+                q = q.sig;
             }
-        } catch (SQLException ex) {
-            JOptionPane.showMessageDialog(rootPane, "Error" + ex);
-        }
+        }                
     }
 
     /**

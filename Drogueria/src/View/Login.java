@@ -8,6 +8,7 @@ package View;
 
 import Model.Sistema;
 import Model.Usuario;
+import static Controllers.Multilista.lista;
 import com.sun.glass.events.KeyEvent;
 import java.awt.Color;
 import javax.swing.ImageIcon;
@@ -24,13 +25,20 @@ public class Login extends javax.swing.JFrame {
     public static String nombreUsuario;
     public static int TipoUser;
     
+    
     public Login() {
         initComponents();
         setLocationRelativeTo(null);
         setResizable(false);
         TxtNombreUsuario.requestFocus();
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/login.png")).getImage());
-        
+        lista.CargarPadres();
+        lista.CargarUsuario();
+        lista.CargarClientes();
+        lista.CargarProductos();
+        lista.CargarFactura();
+        lista.CargarSistema();
+        lista.CargarEmpresa();
         Usuario();
     }
     

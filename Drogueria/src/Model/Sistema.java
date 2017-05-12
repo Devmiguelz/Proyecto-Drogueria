@@ -29,7 +29,7 @@ public class Sistema {
     private float porcentaje;
 
     public Sistema() {
-
+        
     }
 
     public Sistema(float iva, int descuento, float porcentaje) {
@@ -223,7 +223,7 @@ public class Sistema {
             TablaHistorial.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
         TablaHistorial.setRowHeight(20);
-        String sql = "SELECT * FROM historial ORDER BY id ASC";
+        String sql = "SELECT * FROM historial ORDER BY id DESC";
 
         String[] datos = new String[5];
         try {

@@ -5,6 +5,7 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import Model.Cliente;
 import Model.ComboProducto;
 import Model.Factura;
@@ -12,7 +13,7 @@ import Model.Inventario;
 import Model.Sistema;
 import NodosMultilista.NodoDrogueria;
 import NodosMultilista.NodoHijoDrogueria;
-import static View.VentanaPrincipal.lista;
+import com.sun.glass.events.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.sql.Date;
@@ -44,6 +45,9 @@ public class Facturar extends javax.swing.JFrame {
         initComponents();
         hijo = new NodoHijoDrogueria();
         padre = new NodoDrogueria();
+        lista.CargarPadres();
+        lista.CargarClientes();
+        lista.CargarProductos();
         setLocationRelativeTo(null);
         setResizable(false);
         setTitle("FACTURACION");
@@ -55,8 +59,10 @@ public class Facturar extends javax.swing.JFrame {
         BtnQuitar.setEnabled(false);
         BtnSeleccionar.setEnabled(false);
         BtnActualizar.setVisible(false);
+        
         ComboProducto action = new ComboProducto();
         ComboProducto.addItemListener(action);
+        
         TxtIdeCliente.requestFocus();
         BtnAñadir.setEnabled(false);
         BtnFacturar.setEnabled(false);
@@ -170,12 +176,12 @@ public class Facturar extends javax.swing.JFrame {
         }
         if (fila != -1) {
             Inventario inven = new Inventario();
-            int can = Integer.parseInt(TablaFactura.getValueAt(fila, 2).toString()) + cantidad;
+            int can = Integer.parseInt(TablaFactura.getValueAt(fila, 3).toString()) + cantidad;
             if (inven.CantidadProducto(codigo, can)) {
-                float precios = Float.parseFloat(TablaFactura.getValueAt(fila, 3).toString());
+                float precios = Float.parseFloat(TablaFactura.getValueAt(fila, 4).toString());
                 float subtotal = (can * precios);
-                TablaFactura.setValueAt(String.valueOf(can), fila, 2);
-                TablaFactura.setValueAt(String.valueOf(subtotal), fila, 4);
+                TablaFactura.setValueAt(String.valueOf(can), fila, 3);
+                TablaFactura.setValueAt(String.valueOf(subtotal), fila, 5);
                 Total();
                 TotalApagar();
             } else {
@@ -214,7 +220,6 @@ public class Facturar extends javax.swing.JFrame {
             SpinnerCant.requestFocus();
             Total();
             TotalApagar();
-
         }
     }
 
@@ -243,7 +248,12 @@ public class Facturar extends javax.swing.JFrame {
         jSpinner2 = new javax.swing.JSpinner();
         jInternalFrame1 = new javax.swing.JInternalFrame();
         jScrollPane1 = new javax.swing.JScrollPane();
-        TablaFactura = new javax.swing.JTable();
+        TablaFactura = TablaFactura = new javax.swing.JTable(){
+            @Override
+            public boolean isCellEditable(int rowIndex, int colIndex) {
+                return colIndex != 0 && colIndex != 1 && colIndex != 2 && colIndex != 4 && colIndex != 5;
+            }
+        };
         BtnFacturar = new javax.swing.JButton();
         BtnCancelar = new javax.swing.JButton();
         PorcentajeIva = new javax.swing.JLabel();
@@ -291,9 +301,30 @@ public class Facturar extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        TablaFactura.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "Codigo", "Descripcion", "Stan", "Cantidad", "Precio", "SubTotal"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, true, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         TablaFactura.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 TablaFacturaMouseClicked(evt);
+            }
+        });
+        TablaFactura.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                TablaFacturaKeyPressed(evt);
             }
         });
         jScrollPane1.setViewportView(TablaFactura);
@@ -302,14 +333,14 @@ public class Facturar extends javax.swing.JFrame {
 
         BtnFacturar.setFont(new java.awt.Font("Segoe UI Symbol", 0, 14)); // NOI18N
         BtnFacturar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Botones/facturar.png"))); // NOI18N
-        BtnFacturar.setText("Guardar y Enviar Factura");
+        BtnFacturar.setText("Imprimir y Enviar Factura");
         BtnFacturar.setMargin(new java.awt.Insets(2, 5, 2, 5));
         BtnFacturar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BtnFacturarActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnFacturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 490, -1, 40));
+        getContentPane().add(BtnFacturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 490, -1, 40));
 
         BtnCancelar.setFont(new java.awt.Font("Segoe UI Symbol", 0, 14)); // NOI18N
         BtnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Botones/error.png"))); // NOI18N
@@ -351,10 +382,27 @@ public class Facturar extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        ComboProducto.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                ComboProductoKeyPressed(evt);
+            }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                ComboProductoKeyTyped(evt);
+            }
+        });
+
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel4.setText("Cant :");
 
         SpinnerCant.setModel(new javax.swing.SpinnerNumberModel(1, 1, 100, 1));
+        SpinnerCant.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mousePressed(java.awt.event.MouseEvent evt) {
+                SpinnerCantMousePressed(evt);
+            }
+            public void mouseReleased(java.awt.event.MouseEvent evt) {
+                SpinnerCantMouseReleased(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel1.setText("Cod. Factura ");
@@ -387,6 +435,12 @@ public class Facturar extends javax.swing.JFrame {
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Producto");
+
+        TxtIdeCliente.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                TxtIdeClienteKeyTyped(evt);
+            }
+        });
 
         BtnAceptar.setText("Aceptar");
         BtnAceptar.addActionListener(new java.awt.event.ActionListener() {
@@ -501,21 +555,23 @@ public class Facturar extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnCancelarActionPerformed
 
     private void BtnAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAñadirActionPerformed
+        if (ComboProducto.getSelectedIndex() >= 1) {
+            Inventario inven = new Inventario();
+            int cantidad = (int) SpinnerCant.getValue();
+            String producto = ComboProducto.getSelectedItem().toString();
+            int codigo = ObtenerCodigo(producto);
 
-        Inventario inven = new Inventario();
-        int cantidad = (int) SpinnerCant.getValue();
-        String producto = ComboProducto.getSelectedItem().toString();
-        int codigo = ObtenerCodigo(producto);
+            if (inven.CantidadProducto(codigo, cantidad)) {
+                AgregarProducto(producto, cantidad);
+                ComboProducto.setSelectedIndex(0);
+                SpinnerCant.setValue(1);
+                ComboProducto.requestFocus();
+            } else {
+                JOptionPane.showMessageDialog(null, "No puedes agregar este prodcuto con esa cantidad " + cantidad + "\n"
+                        + "La cantidad a llevar debe ser menor a " + inven.ObtenerCantidad(codigo));
+                SpinnerCant.setValue(1);
 
-        if (inven.CantidadProducto(codigo, cantidad)) {
-            AgregarProducto(producto, cantidad);
-            ComboProducto.setSelectedIndex(0);
-            SpinnerCant.setValue(1);
-        } else {
-            JOptionPane.showMessageDialog(null, "No puedes agregar este prodcuto con esa cantidad " + cantidad + "\n"
-                    + "La cantidad a llevar debe ser menor a " + inven.ObtenerCantidad(codigo));
-            SpinnerCant.setValue(1);
-
+            }
         }
     }//GEN-LAST:event_BtnAñadirActionPerformed
 
@@ -527,6 +583,7 @@ public class Facturar extends javax.swing.JFrame {
         if (TablaFactura.getRowCount() > 0) {
             BtnQuitar.setEnabled(true);
             BtnSeleccionar.setEnabled(true);
+            System.out.println("Presiono");
             BtnSeleccionar.setText("Seleccionar Todo");
         } else {
             BtnQuitar.setEnabled(false);
@@ -638,6 +695,7 @@ public class Facturar extends javax.swing.JFrame {
                     BtnAñadir.setEnabled(true);
                     BtnFacturar.setEnabled(true);
                     ComboProducto.setEnabled(true);
+                    ComboProducto.requestFocus();
                     SpinnerCant.setEnabled(true);
                     BtnNuevo.setEnabled(false);
                     BtnAceptar.setText("Cancelar");
@@ -659,6 +717,44 @@ public class Facturar extends javax.swing.JFrame {
 
 
     }//GEN-LAST:event_BtnAceptarActionPerformed
+
+    private void TxtIdeClienteKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdeClienteKeyTyped
+        char tecla = evt.getKeyChar();
+        if (tecla == KeyEvent.VK_ENTER) {
+            BtnAceptar.doClick();
+        }
+    }//GEN-LAST:event_TxtIdeClienteKeyTyped
+
+    private void SpinnerCantMousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SpinnerCantMousePressed
+        System.out.println(SpinnerCant.getValue().toString());
+    }//GEN-LAST:event_SpinnerCantMousePressed
+
+    private void SpinnerCantMouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_SpinnerCantMouseReleased
+        int cantidad = (int) SpinnerCant.getValue();
+        System.out.println(cantidad);
+    }//GEN-LAST:event_SpinnerCantMouseReleased
+
+    private void ComboProductoKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ComboProductoKeyPressed
+        char c = evt.getKeyChar();
+        try {
+            SpinnerCant.setValue(Integer.parseInt(String.valueOf(c)));
+        } catch (Exception e) {
+            System.out.println("");
+        }
+        
+    }//GEN-LAST:event_ComboProductoKeyPressed
+
+    private void ComboProductoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ComboProductoKeyTyped
+        char tecla = evt.getKeyChar();
+        if (tecla == KeyEvent.VK_SPACE) {
+            BtnAñadir.doClick();
+        }
+    }//GEN-LAST:event_ComboProductoKeyTyped
+
+    private void TablaFacturaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TablaFacturaKeyPressed
+        Total();
+        TotalApagar();
+    }//GEN-LAST:event_TablaFacturaKeyPressed
 
     /**
      * @param args the command line arguments

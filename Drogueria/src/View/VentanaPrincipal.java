@@ -5,7 +5,7 @@
  */
 package View;
 
-import Controllers.Multilista;
+import static Controllers.Multilista.lista;
 import Model.Empresa;
 import Model.Exportar;
 import Model.Sistema;
@@ -13,7 +13,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
@@ -29,7 +28,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
     
-    public static  Multilista lista;
     
     public VentanaPrincipal() {
         initComponents();
@@ -40,10 +38,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Cerrar();
         Nombres.setVisible(false);
         Empresa();
-        lista = new Multilista();
-        lista.CargarPadres();
-        lista.CargarClientes();
-        lista.CargarProductos();
+        
     }
 
     private void Cerrar() {

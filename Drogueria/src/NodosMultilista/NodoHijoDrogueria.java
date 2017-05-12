@@ -31,10 +31,12 @@ public class NodoHijoDrogueria {
     public String password;
     public int tipo;
     //Sistema
+    public int id_configuracion;
     public float iva;
     public int descuento;
     public float porcentaje;
     //Empresa
+    public int id_empresa;
     public String nit;
     public String direccion;
     //Factura
@@ -65,9 +67,11 @@ public class NodoHijoDrogueria {
         stan = r.stan;
         password = r.password;
         tipo = r.tipo;
+        id_configuracion = r.id_configuracion;
         iva = r.iva;
         descuento = r.descuento;
         porcentaje = r.porcentaje;
+        id_empresa = r.id_empresa;
         nit = r.nit;
         direccion = r.direccion;
         cliente = r.cliente;

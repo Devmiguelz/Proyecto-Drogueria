@@ -6,16 +6,14 @@
 package Model;
 
 import Conexion.Conexion;
-import Controllers.Multilista;
+import static Controllers.Multilista.lista;
 import NodosMultilista.NodoDrogueria;
 import NodosMultilista.NodoHijoDrogueria;
 import static View.ListaProducto.TablaProducto;
-import static View.VentanaPrincipal.lista;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import javax.swing.table.DefaultTableModel;
 
 /**

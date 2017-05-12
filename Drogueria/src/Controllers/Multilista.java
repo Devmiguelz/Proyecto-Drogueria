@@ -23,6 +23,7 @@ public class Multilista {
     public static NodoDrogueria raiz;
     public static NodoDrogueria padre;
     public static NodoHijoDrogueria hijo;
+    public static Multilista lista = new Multilista();
 
     public Multilista() {
         raiz = null;
@@ -200,7 +201,7 @@ public class Multilista {
                 InsertarHijo(2, hijo);
             }
         } catch (SQLException ex) {
-            System.out.println("Error" + ex);
+            System.out.println("Error" + ex.getMessage());
         }
     }
 
@@ -218,46 +219,62 @@ public class Multilista {
                 InsertarHijo(3, hijo);
             }
         } catch (SQLException ex) {
-            System.out.println("Error :" + ex);
+            System.out.println("Error :" + ex.getMessage());
         }
     }
 
     public void CargarSistema() {
-
+        String sql = " SELECT * FROM  configuracion";
+        try {
+            Statement consult = cn.createStatement();
+            ResultSet rs = consult.executeQuery(sql);
+            if (rs.next()) {
+                hijo.id_configuracion = Integer.parseInt(rs.getString(1));
+                hijo.iva = Float.parseFloat(rs.getString(2));
+                hijo.descuento = Integer.parseInt(rs.getString(3));
+                hijo.porcentaje = Float.parseFloat(rs.getString(4));
+                InsertarHijo(4, hijo);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error :" + ex.getMessage());
+        }
     }
 
     public void CargarFactura() {
-
+        String sql = "SELECT * FROM factura ORDER BY fecha  ASC";
+        try {
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            while (rs.next()) {
+                hijo.codigo = Integer.parseInt(rs.getString(1));
+                hijo.cliente = rs.getString(2);
+                hijo.fecha = rs.getString(3);
+                hijo.hora = rs.getString(4);
+                hijo.empleado = rs.getString(5);
+                hijo.total = Float.parseFloat(rs.getString(6));
+                InsertarHijo(5, hijo);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error" + ex);
+        }
     }
 
     public void CargarEmpresa() {
-
-    }
-
-    public void imprimir(int padrecodigo) {
-        NodoDrogueria p = BuscarPadre(padrecodigo);
-        NodoHijoDrogueria q;
-        String cad = "";
-        cad += "Codigo : " + p.codigo + "         Nombre : " + p.nombre + "\n";
-        cad += "============================================================================\n";
-        q = p.hijo;
-        while (q != null) {
-            cad += "Codigo : " + q.codigo + " Nombre : " + q.nombre + "  Cantidad : " + q.cantidad + " Precio " + q.precio + "  Estado " + q.estado + "\n";
-            cad += "============================================================================\n";
-            q = q.sig;
-        }
-        JOptionPane.showMessageDialog(null, cad);
-    }
-
-    public void MostrarDatos(NodoHijoDrogueria dato) {
-        System.out.println("Codigo : " + dato.codigo + " Nombre : " + dato.nombre + "  Cantidad : " + dato.cantidad + " Precio " + dato.precio + "  Estado " + dato.estado + "\n");
-    }
-    
-    public void MostrarPadres(){
-        NodoDrogueria temp = raiz;
-        while (temp != null) {            
-            System.out.println(temp.codigo+"  "+temp.nombre);
-            temp = temp.sig;
+        String sql = "SELECT * FROM empresa";
+        try {
+            Statement st = cn.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+            if (rs.next()) {
+                hijo.id_empresa = rs.getInt("id_empresa");
+                hijo.nombre =  rs.getString("nombre");
+                hijo.nit = rs.getString("nit");
+                hijo.direccion = rs.getString("direccion");
+                hijo.telefono = Long.parseLong(rs.getString("telefono"));
+                hijo.correo = rs.getString("correo");
+                InsertarHijo(6, hijo);
+            }
+        } catch (SQLException ex) {
+            System.out.println("Error :" + ex.getMessage());
         }
     }
     
@@ -274,5 +291,34 @@ public class Multilista {
             }
         }
         return null;
+    }
+    
+    public void ImprimirTodo(){
+        String cad = "";
+        NodoDrogueria p = BuscarPadre(3);
+        NodoHijoDrogueria q;
+            System.out.println("Padre "+p.nombre+"\n");
+            q = p.hijo;
+            while (q != null) {                
+                cad += "Codigo : "+q.codigo+" "
+                        + "Nombre : "+q.nombre+"  "
+                        + "Cantidad : "+q.cantidad+" "
+                        + "Precio "+q.precio+"  "
+                        + "Estado "+q.estado + " "
+                        + "Nombre : "+q.user+"  "
+                        + "Cantidad : "+q.password+" "
+                        + "Precio "+q.direccion+"  "
+                        + "Estado "+q.stan + " "
+                        + "Cantidad : "+q.nit+" "
+                        + "Precio "+q.id_configuracion+"  "
+                        + "Estado "+q.empleado + " "
+                        + "Nombre : "+q.telefono+"  "
+                        + "Cantidad : "+q.total+" "
+                        + "Precio "+q.cliente+"  "
+                        + "Estado "+q.hora + "\n";
+                cad += "============================================================================\n";
+                q = q.sig;
+            }
+        System.out.println(cad);
     }
 }
