@@ -5,6 +5,7 @@
  */
 package View;
 
+import Controllers.Multilista;
 import Model.Empresa;
 import Model.Exportar;
 import Model.Sistema;
@@ -27,7 +28,9 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author 201611277427
  */
 public class VentanaPrincipal extends javax.swing.JFrame {
-
+    
+    public static  Multilista lista;
+    
     public VentanaPrincipal() {
         initComponents();
         setLocationRelativeTo(null);
@@ -37,6 +40,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Cerrar();
         Nombres.setVisible(false);
         Empresa();
+        lista = new Multilista();
+        lista.CargarPadres();
+        lista.CargarClientes();
+        lista.CargarProductos();
     }
 
     private void Cerrar() {

@@ -78,11 +78,11 @@ public class ListaProducto extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Codigo", "Descripcion", "Cantidad", "Precio"
+                "Codigo", "Descripcion", "Stan", "Cantidad", "Precio"
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Model;
+package NodosMultilista;
 
 /**
  *
@@ -13,6 +13,7 @@ public class NodoHijoDrogueria {
 
     public NodoHijoDrogueria sig;
     //Clientes
+    public int id_cliente;
     public String nombre;
     public String apellido;
     public long identificacion;
@@ -23,8 +24,12 @@ public class NodoHijoDrogueria {
     public int cantidad;
     public float precio;
     public int estado;
+    public String stan;
     //Usuario
+    public int id_usuario;
+    public String user;
     public String password;
+    public int tipo;
     //Sistema
     public float iva;
     public int descuento;
@@ -45,6 +50,7 @@ public class NodoHijoDrogueria {
 
     public NodoHijoDrogueria(NodoHijoDrogueria r) {
         r.sig = null;
+        id_cliente = r.id_cliente;
         nombre = r.nombre;
         apellido = r.apellido;
         identificacion = r.identificacion;
@@ -54,7 +60,11 @@ public class NodoHijoDrogueria {
         cantidad = r.cantidad;
         precio = r.precio;
         estado = r.estado;
+        id_usuario = r.id_usuario;
+        user = r.user;
+        stan = r.stan;
         password = r.password;
+        tipo = r.tipo;
         iva = r.iva;
         descuento = r.descuento;
         porcentaje = r.porcentaje;

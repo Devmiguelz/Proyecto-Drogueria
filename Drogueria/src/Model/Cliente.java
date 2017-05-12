@@ -6,7 +6,10 @@
 package Model;
 
 import Conexion.Conexion;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import static View.ListaCliente.TablaCliente;
+import static View.VentanaPrincipal.lista;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -26,8 +29,12 @@ public class Cliente {
     private String Correo;
     private long telefono;
 
-    public Cliente() {
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
 
+    public Cliente() {
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
 
     public Cliente(String nombre, String apellido, long identificacion, String Correo, long telefono) {
@@ -81,23 +88,22 @@ public class Cliente {
     //Instancia Conexion BD
     Conexion conexion = new Conexion();
     Connection cn = conexion.conexion();
-    
-    
+
     public void Insertar() {
         try {
             PreparedStatement pst = cn.prepareStatement("INSERT INTO clientes "
                     + "(nombre,apellido,identificacion,correo,telefono) "
                     + "VALUES (?,?,?,?,?)");
-            
-            pst.setString(1,getNombre());
-            pst.setString(2,getApellido());
-            pst.setLong(3,getIdentificacion());
-            pst.setString(4,getCorreo());
-            pst.setLong(5,getTelefono());
+
+            pst.setString(1, getNombre());
+            pst.setString(2, getApellido());
+            pst.setLong(3, getIdentificacion());
+            pst.setString(4, getCorreo());
+            pst.setLong(5, getTelefono());
             pst.executeUpdate();
-            
+
         } catch (Exception e) {
-            System.out.println("Error"+ e);
+            System.out.println("Error" + e);
         }
         System.out.println("Agregado Correctamente");
     }
@@ -140,43 +146,51 @@ public class Cliente {
             TablaCliente.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
         TablaCliente.setRowHeight(20);
-        String filtro = "" + nombre + "_%";
-        String sql = "SELECT * FROM clientes WHERE nombre LIKE " + '"' + filtro + '"';
-
         String[] datos = new String[5];
-        try {
-            PreparedStatement pst = cn.prepareStatement(sql);
-            ResultSet rs = pst.executeQuery(sql);
-            while (rs.next()) {
-                datos[0] = rs.getString(2);
-                datos[1] = rs.getString(3);
-                datos[2] = rs.getString(4);
-                datos[3] = rs.getString(5);
-                datos[4] = rs.getString(6);
-                modelo.addRow(datos);
+        int cant = nombre.length();
+
+        NodoDrogueria buscar = lista.BuscarPadre(2);
+        NodoHijoDrogueria q;
+
+        if (buscar != null) {
+            q = buscar.hijo;
+            try {
+                while (q != null) {
+                    if (cant <= q.nombre.length()) {
+                        if (nombre.equalsIgnoreCase(q.nombre.substring(0, cant))) {
+                            datos[0] = q.nombre;
+                            datos[1] = q.apellido;
+                            datos[2] = String.valueOf(q.identificacion);
+                            datos[3] = q.correo;
+                            datos[4] = String.valueOf(q.telefono);
+                            modelo.addRow(datos);
+                        }
+                    }
+                    q = q.sig;
+                }
+            } catch (Exception e) {
+                System.out.println("Error " + e.getMessage());
             }
             TablaCliente.setModel(modelo);
-        } catch (SQLException ex) {
-            System.out.println("Error"+ ex); 
         }
     }
-    
-    public  int CantidadCliente(){
+
+    public int CantidadCliente() {
         int cant = 0;
         String sql = "SELECT * FROM  clientes ";
-         try {
+        try {
             Statement consult = cn.createStatement();
             ResultSet rs = consult.executeQuery(sql);
-            while(rs.next()){
+            while (rs.next()) {
                 cant++;
             }
-         }catch (Exception ex){
-            System.out.println("Error"+ ex);    
+        } catch (Exception ex) {
+            System.out.println("Error" + ex);
         }
         return cant;
     }
-    
-    public  void TablaCliente() {
+
+    public void TablaCliente() {
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Nombre");
         modelo.addColumn("Apellido");
@@ -189,23 +203,22 @@ public class Cliente {
             TablaCliente.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
         TablaCliente.setRowHeight(20);
-        String sql = "SELECT * FROM clientes ORDER BY nombre";
 
         String[] datos = new String[5];
-        try {
-            Statement st = cn.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-            while (rs.next()) {
-                datos[0] = rs.getString(2);
-                datos[1] = rs.getString(3);
-                datos[2] = rs.getString(4);
-                datos[3] = rs.getString(5);
-                datos[4] = rs.getString(6);
+        NodoDrogueria buscar = lista.BuscarPadre(2);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                datos[0] = q.nombre;
+                datos[1] = q.apellido;
+                datos[2] = String.valueOf(q.identificacion);
+                datos[3] = q.correo;
+                datos[4] = String.valueOf(q.telefono);
                 modelo.addRow(datos);
+                q = q.sig;
             }
             TablaCliente.setModel(modelo);
-        } catch (SQLException ex) {
-            System.out.println("Error"+ ex); 
         }
     }
 

@@ -5,19 +5,17 @@
  */
 package View;
 
-import Conexion.Conexion;
 import Model.Cliente;
 import Model.ComboProducto;
 import Model.Factura;
 import Model.Inventario;
 import Model.Sistema;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
+import static View.VentanaPrincipal.lista;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.sql.Connection;
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -37,18 +35,20 @@ public class Facturar extends javax.swing.JFrame {
     /**
      * Creates new form RegistrarFactura
      */
-    private String[] correos;
     private float TotalPagar;
     private String tecla;
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
 
     public Facturar() {
         initComponents();
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
         setLocationRelativeTo(null);
         setResizable(false);
         setTitle("FACTURACION");
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/barcode.png")).getImage());
         Cerrar();
-        LLenarComboClientes();
         LLenarComboProductos();
         InicioTabla();
         Codigo();
@@ -57,6 +57,12 @@ public class Facturar extends javax.swing.JFrame {
         BtnActualizar.setVisible(false);
         ComboProducto action = new ComboProducto();
         ComboProducto.addItemListener(action);
+        TxtIdeCliente.requestFocus();
+        BtnAñadir.setEnabled(false);
+        BtnFacturar.setEnabled(false);
+        ComboProducto.setEnabled(false);
+        SpinnerCant.setEnabled(false);
+        BtnNuevo.setEnabled(true);
     }
     DecimalFormat formato = new DecimalFormat("###,###.##");
     Cliente cliente = new Cliente();
@@ -83,56 +89,32 @@ public class Facturar extends javax.swing.JFrame {
     }
 
     public final void InicioTabla() {
-        modelo.addColumn("codigo");
+        modelo.addColumn("Codigo");
         modelo.addColumn("Descripcion");
+        modelo.addColumn("Stan");
         modelo.addColumn("Cantidad");
         modelo.addColumn("Precio");
         modelo.addColumn("SubTotal");
         TablaFactura.setModel(modelo);
-        int[] anchos = {20, 90, 20, 30, 30};
+        int[] anchos = {20, 80, 20, 20, 30, 30};
         for (int i = 0; i < TablaFactura.getColumnCount(); i++) {
             TablaFactura.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
         TablaFactura.setRowHeight(20);
     }
 
-    //Instancia Conexion BD
-    Conexion conexion = new Conexion();
-    Connection cn = conexion.conexion();
-
-    public final void LLenarComboClientes() {
-        String sql = "SELECT nombre,apellido,correo  FROM  clientes";
-        int i = 0;
-        try {
-            Statement consult = cn.createStatement();
-            ResultSet rs = consult.executeQuery(sql);
-            ComboCliente.addItem("....");
-            correos = new String[cliente.CantidadCliente()];
-            while (rs.next()) {
-                correos[i] = rs.getString("correo");
-                Object nombre = rs.getObject("nombre");
-                Object apellido = rs.getObject("apellido");
-                ComboCliente.addItem(nombre + " " + apellido);
-                i++;
-            }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error" + ex);
-        }
-    }
-
     final void LLenarComboProductos() {
-        String sql = "SELECT descripcion,cod_producto FROM  productos WHERE estado = 1";
-        try {
-            Statement consult = cn.createStatement();
-            ResultSet rs = consult.executeQuery(sql);
+        NodoDrogueria buscar = lista.BuscarPadre(1);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
             ComboProducto.addItem("....");
-            while (rs.next()) {
-                Object codigo = rs.getObject("cod_producto");
-                Object nombre = rs.getObject("descripcion");
+            while (q != null) {
+                Object codigo = q.codigo;
+                Object nombre = q.nombre;
                 ComboProducto.addItem(nombre.toString().toUpperCase() + " - " + codigo);
+                q = q.sig;
             }
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(null, "Error" + ex);
         }
     }
 
@@ -194,6 +176,8 @@ public class Facturar extends javax.swing.JFrame {
                 float subtotal = (can * precios);
                 TablaFactura.setValueAt(String.valueOf(can), fila, 2);
                 TablaFactura.setValueAt(String.valueOf(subtotal), fila, 4);
+                Total();
+                TotalApagar();
             } else {
                 JOptionPane.showMessageDialog(null, "No puedes agregar este prodcuto con esa cantidad " + can + "\n"
                         + "La cantidad a llevar debe ser menor a " + inven.ObtenerCantidad(codigo));
@@ -201,31 +185,37 @@ public class Facturar extends javax.swing.JFrame {
             }
         } else {
             DefaultTableModel model = (DefaultTableModel) this.TablaFactura.getModel();
-            String sql = "SELECT * FROM productos WHERE cod_producto = '" + codigo + "' ";
-            float precio;
-            String[] datos = new String[5];
-            try {
-                Statement st = cn.createStatement();
-                ResultSet rs = st.executeQuery(sql);
-                while (rs.next()) {
-                    datos[0] = rs.getString(1);
-                    datos[1] = rs.getString(2);
-                    datos[2] = String.valueOf(cantidad);
-                    datos[3] = rs.getString(4);
-                    precio = Float.parseFloat(rs.getString(4));
-                    precio = (float) precio * cantidad;
-                    datos[4] = String.valueOf(precio);
-                    model.addRow(datos);
-                }
-                TablaFactura.setModel(model);
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(rootPane, "Error" + ex);
-            }
-        }
-        SpinnerCant.requestFocus();
-        Total();
-        TotalApagar();
 
+            float precio;
+            String[] datos = new String[6];
+
+            NodoDrogueria buscar = lista.BuscarPadre(1);
+            NodoHijoDrogueria q;
+            if (buscar != null) {
+                q = buscar.hijo;
+                while (q != null) {
+                    if (q.codigo == codigo) {
+                        hijo = q;
+                        break;
+                    }
+                    q = q.sig;
+                }
+            }
+            datos[0] = String.valueOf(hijo.codigo);
+            datos[1] = hijo.nombre;
+            datos[2] = hijo.stan;
+            datos[3] = String.valueOf(cantidad);
+            datos[4] = String.valueOf(hijo.precio);
+            precio = hijo.precio;
+            precio = (float) precio * cantidad;
+            datos[5] = String.valueOf(precio);
+            model.addRow(datos);
+            TablaFactura.setModel(model);
+            SpinnerCant.requestFocus();
+            Total();
+            TotalApagar();
+
+        }
     }
 
     public void Total() {
@@ -236,7 +226,7 @@ public class Facturar extends javax.swing.JFrame {
     public float getTotal() {
         float total = 0;
         for (int i = 0; i < TablaFactura.getRowCount(); i++) {
-            total += Float.parseFloat(TablaFactura.getValueAt(i, 4).toString());
+            total += Float.parseFloat(TablaFactura.getValueAt(i, 5).toString());
         }
         return total;
     }
@@ -251,6 +241,7 @@ public class Facturar extends javax.swing.JFrame {
     private void initComponents() {
 
         jSpinner2 = new javax.swing.JSpinner();
+        jInternalFrame1 = new javax.swing.JInternalFrame();
         jScrollPane1 = new javax.swing.JScrollPane();
         TablaFactura = new javax.swing.JTable();
         BtnFacturar = new javax.swing.JButton();
@@ -268,15 +259,29 @@ public class Facturar extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         TxtCodigo = new javax.swing.JTextField();
         BtnAñadir = new javax.swing.JButton();
-        ComboCliente = new javax.swing.JComboBox<String>();
         BtnNuevo = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        TxtIdeCliente = new javax.swing.JTextField();
+        BtnAceptar = new javax.swing.JButton();
         BtnSeleccionar = new javax.swing.JButton();
         BtnActualizar = new javax.swing.JButton();
         jLabel7 = new javax.swing.JLabel();
         TxtTotalPagar = new javax.swing.JTextField();
         Iva = new javax.swing.JLabel();
         TxtPrecioIva = new javax.swing.JTextField();
+
+        jInternalFrame1.setVisible(true);
+
+        javax.swing.GroupLayout jInternalFrame1Layout = new javax.swing.GroupLayout(jInternalFrame1.getContentPane());
+        jInternalFrame1.getContentPane().setLayout(jInternalFrame1Layout);
+        jInternalFrame1Layout.setHorizontalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jInternalFrame1Layout.setVerticalGroup(
+            jInternalFrame1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         addMouseListener(new java.awt.event.MouseAdapter() {
@@ -383,6 +388,13 @@ public class Facturar extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
         jLabel3.setText("Producto");
 
+        BtnAceptar.setText("Aceptar");
+        BtnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BtnAceptarActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -394,23 +406,26 @@ public class Facturar extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel3))
                 .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(ComboProducto, 0, 251, Short.MAX_VALUE)
-                    .addComponent(TxtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(ComboCliente, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(0, 32, Short.MAX_VALUE)
-                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(SpinnerCant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(BtnAñadir, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(25, 25, 25)
-                        .addComponent(BtnNuevo)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(ComboProducto, 0, 251, Short.MAX_VALUE)
+                            .addComponent(TxtIdeCliente))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(0, 32, Short.MAX_VALUE)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(SpinnerCant, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(BtnAñadir, javax.swing.GroupLayout.PREFERRED_SIZE, 42, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(27, 27, 27)
+                                .addComponent(BtnAceptar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(BtnNuevo))))
+                    .addComponent(TxtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -421,9 +436,10 @@ public class Facturar extends javax.swing.JFrame {
                     .addComponent(jLabel1))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(ComboCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(BtnNuevo)
-                    .addComponent(jLabel2))
+                    .addComponent(jLabel2)
+                    .addComponent(TxtIdeCliente, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(BtnAceptar)
+                    .addComponent(BtnNuevo))
                 .addGap(23, 23, 23)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -485,25 +501,21 @@ public class Facturar extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnCancelarActionPerformed
 
     private void BtnAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAñadirActionPerformed
-        if (ComboCliente.getSelectedIndex() > 0 && ComboProducto.getSelectedIndex() > 0) {
 
-            Inventario inven = new Inventario();
-            int cantidad = (int) SpinnerCant.getValue();
-            String producto = ComboProducto.getSelectedItem().toString();
-            int codigo = ObtenerCodigo(producto);
+        Inventario inven = new Inventario();
+        int cantidad = (int) SpinnerCant.getValue();
+        String producto = ComboProducto.getSelectedItem().toString();
+        int codigo = ObtenerCodigo(producto);
 
-            if (inven.CantidadProducto(codigo, cantidad)) {
-                AgregarProducto(producto, cantidad);
-                ComboProducto.setSelectedIndex(0);
-                SpinnerCant.setValue(1);
-            } else {
-                JOptionPane.showMessageDialog(null, "No puedes agregar este prodcuto con esa cantidad " + cantidad + "\n"
-                        + "La cantidad a llevar debe ser menor a " + inven.ObtenerCantidad(codigo));
-                SpinnerCant.setValue(1);
-
-            }
+        if (inven.CantidadProducto(codigo, cantidad)) {
+            AgregarProducto(producto, cantidad);
+            ComboProducto.setSelectedIndex(0);
+            SpinnerCant.setValue(1);
         } else {
-            //Seleccione cliente o producto
+            JOptionPane.showMessageDialog(null, "No puedes agregar este prodcuto con esa cantidad " + cantidad + "\n"
+                    + "La cantidad a llevar debe ser menor a " + inven.ObtenerCantidad(codigo));
+            SpinnerCant.setValue(1);
+
         }
     }//GEN-LAST:event_BtnAñadirActionPerformed
 
@@ -550,11 +562,10 @@ public class Facturar extends javax.swing.JFrame {
             dia = fecha.get(Calendar.DAY_OF_MONTH);
 
             codigo = Integer.parseInt(TxtCodigo.getText());
-            String clientes = ComboCliente.getSelectedItem().toString();
             Fecha = dia + "/" + mes + "/" + año;
             String empleado = Login.nombreEmpleado;
-
-            String correo = correos[ComboCliente.getSelectedIndex() - 1];
+            String clientes = hijo.nombre + " " + hijo.apellido;
+            String correo = hijo.correo;
 
             for (int i = 0; i < TablaFactura.getRowCount(); i++) {
                 Codigos[i] = Integer.parseInt(TablaFactura.getValueAt(i, 0).toString());
@@ -612,11 +623,42 @@ public class Facturar extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnSeleccionarActionPerformed
 
     private void BtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnActualizarActionPerformed
-        ComboCliente.removeAllItems();
-        LLenarComboClientes();
-        int item = ComboCliente.getItemCount() - 1;
-        ComboCliente.setSelectedIndex(item);
+
     }//GEN-LAST:event_BtnActualizarActionPerformed
+
+    private void BtnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAceptarActionPerformed
+        String boton = BtnAceptar.getText();
+        if (boton.equals("Aceptar")) {
+            if (!TxtIdeCliente.getText().equals("")) {
+                int id = Integer.parseInt(TxtIdeCliente.getText());
+                hijo = lista.BuscarCliente(2, id);
+                if (hijo != null) {
+                    TxtIdeCliente.setText(hijo.nombre + "  " + hijo.apellido);
+                    TxtIdeCliente.setEditable(false);
+                    BtnAñadir.setEnabled(true);
+                    BtnFacturar.setEnabled(true);
+                    ComboProducto.setEnabled(true);
+                    SpinnerCant.setEnabled(true);
+                    BtnNuevo.setEnabled(false);
+                    BtnAceptar.setText("Cancelar");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Numero de Identificacion no Registrada");
+                }
+            }
+        } else if (boton.equals("Cancelar")) {
+            TxtIdeCliente.setText("");
+            TxtIdeCliente.requestFocus();
+            BtnAñadir.setEnabled(false);
+            TxtIdeCliente.setEditable(true);
+            BtnFacturar.setEnabled(false);
+            ComboProducto.setEnabled(false);
+            SpinnerCant.setEnabled(false);
+            BtnNuevo.setEnabled(true);
+            BtnAceptar.setText("Aceptar");
+        }
+
+
+    }//GEN-LAST:event_BtnAceptarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -652,6 +694,7 @@ public class Facturar extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton BtnAceptar;
     public static javax.swing.JButton BtnActualizar;
     private javax.swing.JButton BtnAñadir;
     private javax.swing.JButton BtnCancelar;
@@ -659,17 +702,18 @@ public class Facturar extends javax.swing.JFrame {
     public javax.swing.JButton BtnNuevo;
     private javax.swing.JButton BtnQuitar;
     private javax.swing.JButton BtnSeleccionar;
-    public static javax.swing.JComboBox<String> ComboCliente;
     public static javax.swing.JComboBox<String> ComboProducto;
     private javax.swing.JLabel Iva;
     private javax.swing.JLabel PorcentajeIva;
     public static javax.swing.JSpinner SpinnerCant;
     public static javax.swing.JTable TablaFactura;
     public static javax.swing.JTextField TxtCodigo;
+    private javax.swing.JTextField TxtIdeCliente;
     private javax.swing.JTextField TxtIva;
     private javax.swing.JTextField TxtPrecioIva;
     private javax.swing.JTextField TxtSubTotal;
     private javax.swing.JTextField TxtTotalPagar;
+    private javax.swing.JInternalFrame jInternalFrame1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
