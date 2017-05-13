@@ -583,7 +583,6 @@ public class Facturar extends javax.swing.JFrame {
         if (TablaFactura.getRowCount() > 0) {
             BtnQuitar.setEnabled(true);
             BtnSeleccionar.setEnabled(true);
-            System.out.println("Presiono");
             BtnSeleccionar.setText("Seleccionar Todo");
         } else {
             BtnQuitar.setEnabled(false);
