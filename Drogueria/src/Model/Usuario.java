@@ -11,6 +11,7 @@ import static Model.Password.Descriptar;
 import NodosMultilista.NodoDrogueria;
 import NodosMultilista.NodoHijoDrogueria;
 import static View.Configuracion.TablaUsuario;
+import static View.VentasUsuarios.TUsuarioVenta;
 import java.sql.*;
 import javax.swing.table.DefaultTableModel;
 
@@ -256,5 +257,47 @@ public class Usuario {
             }
             TablaUsuario.setModel(modelo);
         }
+    }
+    
+    public void TablaUsuarioVentas() {
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("Nombre Empleado");
+        modelo.addColumn("Total Vendido");
+        TUsuarioVenta.setModel(modelo);
+        int[] anchos = {90, 90};
+        for (int i = 0; i < TUsuarioVenta.getColumnCount(); i++) {
+            TUsuarioVenta.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+        }
+        TUsuarioVenta.setRowHeight(20);
+        String[] datos = new String[2];
+
+        NodoDrogueria buscar = lista.BuscarPadre(3);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                datos[0] = q.nombre;
+                datos[1] = String.valueOf(TotalVendio(q.nombre));
+                modelo.addRow(datos);
+                q = q.sig;
+            }
+            TUsuarioVenta.setModel(modelo);
+        }
+    }
+    
+    public int TotalVendio(String nombre){
+        int Total = 0;
+        NodoDrogueria buscar = lista.BuscarPadre(5);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.empleado.equalsIgnoreCase(nombre)) {
+                    Total += q.total; 
+                }
+                q = q.sig;
+            }
+        }
+        return Total;
     }
 }

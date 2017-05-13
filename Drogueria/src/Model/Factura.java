@@ -6,8 +6,13 @@
 package Model;
 
 import Conexion.Conexion;
+import static Controllers.Multilista.lista;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import static View.ListaFactura.TablaDetalle;
 import static View.ListaFactura.TablaFacturas;
+import static View.VentasUsuarios.TablaDetalleVentas;
+import static View.VentasUsuarios.TablaFacturaVentas;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -28,9 +33,13 @@ public class Factura {
     private String hora;
     private String empleado;
     private float total;
+    
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
 
     public Factura() {
-
+        padre = new NodoDrogueria();
+        hijo = new NodoHijoDrogueria();
     }
 
     public Factura(int codigo, String cliente, String fecha, String hora, String empleado, float total) {
@@ -169,6 +178,44 @@ public class Factura {
             System.out.println(" ObtenerDetalle() Error : " + ex.getMessage());
         }
     }
+    
+    public void ObtenerDetallesVentas(int cod_factura) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("Codigo");
+        modelo.addColumn("Descripcion");
+        modelo.addColumn("Cantidad");
+        modelo.addColumn("Precio");
+        modelo.addColumn("SubTotal");
+        TablaDetalleVentas.setModel(modelo);
+        int[] anchos = {20, 90, 20, 20, 20};
+        for (int k = 0; k < TablaDetalleVentas.getColumnCount(); k++) {
+            TablaDetalleVentas.getColumnModel().getColumn(k).setPreferredWidth(anchos[k]);
+        }
+        TablaDetalleVentas.setRowHeight(20);
+        String sql = "SELECT productos.cod_producto,descripcion,cantidad,productos.precio  FROM  productos "
+                + " JOIN detalle_factura ON detalle_factura.cod_producto = productos.cod_producto "
+                + " WHERE cod_factura = '" + cod_factura + "'";
+        String[] datos = new String[5];
+        try {
+            Statement consult = cn.createStatement();
+            ResultSet rs = consult.executeQuery(sql);
+            while (rs.next()) {
+                datos[0] = rs.getString(1);
+                datos[1] = rs.getString(2);
+                datos[2] = rs.getString(3);
+                datos[3] = rs.getString(4);
+                int cant = Integer.parseInt(rs.getString(3));
+                int precio = Integer.parseInt(rs.getString(4));
+                int subtotal = cant * precio;
+                datos[4] = String.valueOf(subtotal);
+                modelo.addRow(datos);
+            }
+            TablaDetalleVentas.setModel(modelo);
+        } catch (SQLException ex) {
+            System.out.println(" ObtenerDetalle() Error : " + ex.getMessage());
+        }
+    }
+    
     public void MenosProducto(int codigo[], int cantidades[]) {
         int cant = codigo.length;
         for (int i = 0; i < cant; i++) {
@@ -307,6 +354,40 @@ public class Factura {
 
         EnviarEmail enviar = new EnviarEmail(correo, Asunto, Mensaje, "Factura Enviada");
         enviar.Enviar();
+    }
+    
+    public void TablaFacturaVentas(String nombre) {
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("Codigo");
+        modelo.addColumn("Cliente");
+        modelo.addColumn("Fecha");
+        modelo.addColumn("Hora");
+        modelo.addColumn("Total");
+        TablaFacturaVentas.setModel(modelo);
+        int[] anchos = {20, 80, 30, 30,20};
+        for (int i = 0; i < TablaFacturaVentas.getColumnCount(); i++) {
+            TablaFacturaVentas.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
+        }
+        TablaFacturaVentas.setRowHeight(20);
+        
+        String[] datos = new String[5];
+        NodoDrogueria buscar = lista.BuscarPadre(5);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.empleado.equalsIgnoreCase(nombre)) {
+                    datos[0] = String.valueOf(q.codigo);
+                    datos[1] = q.cliente;
+                    datos[2] = q.fecha;
+                    datos[3] = q.hora;
+                    datos[4] = String.valueOf(q.total);
+                    modelo.addRow(datos);
+                }
+                q = q.sig;
+            }
+        }
+        TablaFacturaVentas.setModel(modelo);
     }
 
 }

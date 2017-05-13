@@ -5,10 +5,13 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import static Model.Password.Encriptar;
 import static Model.Password.Descriptar;
 import Model.Sistema;
 import Model.Usuario;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -28,6 +31,8 @@ public class RegistrarUsuario extends javax.swing.JFrame {
      */
     private String user;
     private int cant;
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
 
     public RegistrarUsuario() {
         initComponents();
@@ -37,6 +42,8 @@ public class RegistrarUsuario extends javax.swing.JFrame {
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/user.png")).getImage());
         Cerrar();
         Habilitar();
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
     
     Sistema sistema = new Sistema();
@@ -240,6 +247,15 @@ public class RegistrarUsuario extends javax.swing.JFrame {
                 } else {
                     Usuario usuario = new Usuario(nombre, user1, password, tipo);
                     usuario.Insertar();
+                    
+                    hijo.id_usuario = lista.UltimoHijo(3)+1;
+                    hijo.nombre = nombre;
+                    hijo.user = user;
+                    hijo.password = password;
+                    hijo.tipo = tipo;
+
+                    lista.InsertarHijo(3, hijo);
+                    
                     this.dispose();
                     sistema.InsertarHistorial("Ha Registrado un Usuario");
                     Modal modal = new Modal(new javax.swing.JFrame(), true);

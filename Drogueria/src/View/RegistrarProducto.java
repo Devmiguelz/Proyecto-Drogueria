@@ -5,8 +5,11 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import Model.Producto;
 import Model.Sistema;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -27,6 +30,10 @@ public class RegistrarProducto extends javax.swing.JFrame {
      */
     private int codi;
     private String texto1;
+    
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
+
 
     public RegistrarProducto() {
         initComponents();
@@ -34,6 +41,8 @@ public class RegistrarProducto extends javax.swing.JFrame {
         setResizable(false);
         setTitle("REGISTRAR PRODUCTO");
         Cerrar();
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
 
     DecimalFormat formato = new DecimalFormat("###,###.##");
@@ -241,6 +250,15 @@ public class RegistrarProducto extends javax.swing.JFrame {
                 if (BtnAgregar.getText().equals("Agregar")) {
                     Producto producto = new Producto(codigo, nombre, cant, precio, estado);
                     producto.Insertar();
+
+                    hijo.codigo = codigo;
+                    hijo.nombre = nombre;
+                    hijo.cantidad = cant;
+                    hijo.precio = precio;
+                    hijo.estado = estado;
+
+                    lista.InsertarHijo(1, hijo);
+
                     Modal modal = new Modal(new javax.swing.JFrame(), true);
                     modal.TxtMensaje.setText("Producto Registrado");
                     modal.setVisible(true);

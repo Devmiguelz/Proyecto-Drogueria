@@ -37,17 +37,12 @@ public class Facturar extends javax.swing.JFrame {
      * Creates new form RegistrarFactura
      */
     private float TotalPagar;
-    private String tecla;
-    private NodoHijoDrogueria hijo;
-    private NodoDrogueria padre;
+    public static NodoHijoDrogueria aux;
+    private NodoHijoDrogueria hijocliente;
+    private NodoHijoDrogueria hijoproducto;
 
     public Facturar() {
         initComponents();
-        hijo = new NodoHijoDrogueria();
-        padre = new NodoDrogueria();
-        lista.CargarPadres();
-        lista.CargarClientes();
-        lista.CargarProductos();
         setLocationRelativeTo(null);
         setResizable(false);
         setTitle("FACTURACION");
@@ -59,10 +54,10 @@ public class Facturar extends javax.swing.JFrame {
         BtnQuitar.setEnabled(false);
         BtnSeleccionar.setEnabled(false);
         BtnActualizar.setVisible(false);
-        
+
         ComboProducto action = new ComboProducto();
         ComboProducto.addItemListener(action);
-        
+
         TxtIdeCliente.requestFocus();
         BtnAñadir.setEnabled(false);
         BtnFacturar.setEnabled(false);
@@ -201,18 +196,18 @@ public class Facturar extends javax.swing.JFrame {
                 q = buscar.hijo;
                 while (q != null) {
                     if (q.codigo == codigo) {
-                        hijo = q;
+                        hijoproducto = q;
                         break;
                     }
                     q = q.sig;
                 }
             }
-            datos[0] = String.valueOf(hijo.codigo);
-            datos[1] = hijo.nombre;
-            datos[2] = hijo.stan;
+            datos[0] = String.valueOf(hijoproducto.codigo);
+            datos[1] = hijoproducto.nombre;
+            datos[2] = hijoproducto.stan;
             datos[3] = String.valueOf(cantidad);
-            datos[4] = String.valueOf(hijo.precio);
-            precio = hijo.precio;
+            datos[4] = String.valueOf(hijoproducto.precio);
+            precio = hijoproducto.precio;
             precio = (float) precio * cantidad;
             datos[5] = String.valueOf(precio);
             model.addRow(datos);
@@ -620,12 +615,12 @@ public class Facturar extends javax.swing.JFrame {
             codigo = Integer.parseInt(TxtCodigo.getText());
             Fecha = dia + "/" + mes + "/" + año;
             String empleado = Login.nombreEmpleado;
-            String clientes = hijo.nombre + " " + hijo.apellido;
-            String correo = hijo.correo;
+            String clientes = hijocliente.nombre + " " + hijocliente.apellido;
+            String correo = hijocliente.correo;
 
             for (int i = 0; i < TablaFactura.getRowCount(); i++) {
                 Codigos[i] = Integer.parseInt(TablaFactura.getValueAt(i, 0).toString());
-                Cantidades[i] = Integer.parseInt(TablaFactura.getValueAt(i, 2).toString());
+                Cantidades[i] = Integer.parseInt(TablaFactura.getValueAt(i, 3).toString());
             }
 
             for (int i = 0; i < TablaFactura.getRowCount(); i++) {
@@ -637,7 +632,17 @@ public class Facturar extends javax.swing.JFrame {
             factura.Insertar();
             factura.DetalleFactura(Codigos, Cantidades);
             factura.MenosProducto(Codigos, Cantidades);
-            factura.EnviarFactura(correo, Productos);
+            
+            aux = new NodoHijoDrogueria();
+            aux.codigo = codigo;
+            aux.cliente = clientes;
+            aux.fecha = Fecha;
+            aux.hora = hora;
+            aux.empleado = empleado;
+            aux.total = TotalPagar;
+
+            lista.InsertarHijo(5, aux);
+            //factura.EnviarFactura(correo, Productos);
             Sistema sistema = new Sistema();
             sistema.InsertarHistorial("Ha Registrado una Factura");
             this.dispose();
@@ -679,7 +684,17 @@ public class Facturar extends javax.swing.JFrame {
     }//GEN-LAST:event_BtnSeleccionarActionPerformed
 
     private void BtnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnActualizarActionPerformed
-
+        hijocliente = new NodoHijoDrogueria();
+        hijocliente = aux;
+        TxtIdeCliente.setText(hijocliente.nombre + "  " + hijocliente.apellido);
+        TxtIdeCliente.setEditable(false);
+        BtnAñadir.setEnabled(true);
+        BtnFacturar.setEnabled(true);
+        ComboProducto.setEnabled(true);
+        ComboProducto.requestFocus();
+        SpinnerCant.setEnabled(true);
+        BtnNuevo.setEnabled(false);
+        BtnAceptar.setText("Cancelar");
     }//GEN-LAST:event_BtnActualizarActionPerformed
 
     private void BtnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnAceptarActionPerformed
@@ -687,9 +702,9 @@ public class Facturar extends javax.swing.JFrame {
         if (boton.equals("Aceptar")) {
             if (!TxtIdeCliente.getText().equals("")) {
                 int id = Integer.parseInt(TxtIdeCliente.getText());
-                hijo = lista.BuscarCliente(2, id);
-                if (hijo != null) {
-                    TxtIdeCliente.setText(hijo.nombre + "  " + hijo.apellido);
+                hijocliente = lista.BuscarCliente(2, id);
+                if (hijocliente != null) {
+                    TxtIdeCliente.setText(hijocliente.nombre + "  " + hijocliente.apellido);
                     TxtIdeCliente.setEditable(false);
                     BtnAñadir.setEnabled(true);
                     BtnFacturar.setEnabled(true);
@@ -740,7 +755,7 @@ public class Facturar extends javax.swing.JFrame {
         } catch (Exception e) {
             System.out.println("");
         }
-        
+
     }//GEN-LAST:event_ComboProductoKeyPressed
 
     private void ComboProductoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_ComboProductoKeyTyped

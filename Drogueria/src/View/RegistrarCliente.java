@@ -5,8 +5,11 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import Model.Cliente;
 import Model.Sistema;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -26,7 +29,9 @@ public class RegistrarCliente extends javax.swing.JFrame {
      * Creates new form RegistrarCliente
      */
     private long Id;
-    
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
+
     public RegistrarCliente() {
         initComponents();
         setLocationRelativeTo(null);
@@ -35,7 +40,10 @@ public class RegistrarCliente extends javax.swing.JFrame {
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/user-1.png")).getImage());
         Cerrar();
         Botones();
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
+
     public void Datos(String nombre, String apellido, long identificacion, String correo, Long telefono) {
         TxtNombre.setText(nombre);
         TxtApellido.setText(apellido);
@@ -46,19 +54,20 @@ public class RegistrarCliente extends javax.swing.JFrame {
         TxtCorreo2.setText(correo);
         TxtTelefono.setText(String.valueOf(telefono));
     }
-    private void Botones(){
+
+    private void Botones() {
         String texto = BtnRegistrar.getText();
         if (texto.equals("Actualizar")) {
             BtnRegistrar.setEnabled(true);
         }
     }
-    
-    private void Cerrar(){
+
+    private void Cerrar() {
         try {
             this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
             addWindowListener(new WindowAdapter() {
                 @Override
-                public void windowClosing(WindowEvent e){
+                public void windowClosing(WindowEvent e) {
                     comfirmar();
                 }
             });
@@ -66,9 +75,11 @@ public class RegistrarCliente extends javax.swing.JFrame {
         } catch (Exception e) {
         }
     }
-    public void comfirmar(){
+
+    public void comfirmar() {
         this.dispose();
     }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -196,78 +207,96 @@ public class RegistrarCliente extends javax.swing.JFrame {
         String apellido = TxtApellido.getText();
         String correo1 = TxtCorreo.getText();
         String correo2 = TxtCorreo2.getText();
-                
+
         if (nombre.equals("") && apellido.equals("") && correo1.equals("") && correo2.equals("") && TxtId.getText().equals("") && TxtTelefono.getText().equals("")) {
-            JOptionPane.showMessageDialog(null,"Todos los campos son Obligatorios");
-        }else if (correo1.length() > 10 && correo2.length() > 10) {
-                long id = 0;
-                long telefono = 0;
-                try {
-                    telefono = Long.parseLong(TxtTelefono.getText());
-                    id = Long.parseLong(TxtId.getText());
-                } catch (Exception e) {
-                    System.out.println("Error "+e);
-                }
+            JOptionPane.showMessageDialog(null, "Todos los campos son Obligatorios");
+        } else if (correo1.length() > 10 && correo2.length() > 10) {
+            long id = 0;
+            long telefono = 0;
+            try {
+                telefono = Long.parseLong(TxtTelefono.getText());
+                id = Long.parseLong(TxtId.getText());
+            } catch (Exception e) {
+                System.out.println("Error " + e);
+            }
+
+            if (BtnRegistrar.getText().equals("Registrar")) {
+                Cliente cliente = new Cliente(nombre, apellido, id, correo1, telefono);
+                cliente.Insertar();
                 
-                if (BtnRegistrar.getText().equals("Registrar")) {
-                    Cliente cliente = new Cliente(nombre,apellido,id,correo1,telefono);
-                    cliente.Insertar();
-                    Modal modal = new Modal(new javax.swing.JFrame(), true);
-                    modal.TxtMensaje.setText("Cliente Registrado");
-                    modal.setVisible(true);
-                    Sistema sistema = new Sistema();
-                    sistema.InsertarHistorial("Ha Registrado un Cliente");
-                }else{
-                    Cliente cliente = new Cliente(nombre,apellido,id,correo1,telefono);
-                    cliente.Actualizar(Id);
-                    Modal modal = new Modal(new javax.swing.JFrame(), true);
-                    modal.TxtMensaje.setText("Datos Actualizados");
-                    modal.setVisible(true);
-                    Sistema sistema = new Sistema();
-                    sistema.InsertarHistorial("Ha Actualizado un Cliente");
-                }
-                ListaCliente.BtnActualizar.doClick();
-                this.dispose();
-        }else{
+                hijo.id_usuario = lista.UltimoHijo(2)+1;
+                hijo.nombre = nombre;
+                hijo.apellido = apellido;
+                hijo.identificacion = id;
+                hijo.correo = correo1;
+                hijo.telefono = telefono;
+
+                lista.InsertarHijo(2, hijo);
+
+                Modal modal = new Modal(new javax.swing.JFrame(), true);
+                modal.TxtMensaje.setText("Cliente Registrado");
+                modal.setVisible(true);
+                Sistema sistema = new Sistema();
+                sistema.InsertarHistorial("Ha Registrado un Cliente");
+            } else {
+                Cliente cliente = new Cliente(nombre, apellido, id, correo1, telefono);
+                cliente.Actualizar(Id);
+                Modal modal = new Modal(new javax.swing.JFrame(), true);
+                modal.TxtMensaje.setText("Datos Actualizados");
+                modal.setVisible(true);
+                Sistema sistema = new Sistema();
+                sistema.InsertarHistorial("Ha Actualizado un Cliente");
+            }
+            ListaCliente.BtnActualizar.doClick();
+            this.dispose();
+        } else {
             JOptionPane.showMessageDialog(null, "Ingrese un Correo Valido");
         }
-        
-        
+
+
     }//GEN-LAST:event_BtnRegistrarActionPerformed
 
     private void TxtCorreoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCorreoKeyTyped
         char c = evt.getKeyChar();
-        if ((c < 'a' || c > 'z') && (c < '.' || c > '@')) evt.consume();
+        if ((c < 'a' || c > 'z') && (c < '.' || c > '@')) {
+            evt.consume();
+        }
     }//GEN-LAST:event_TxtCorreoKeyTyped
 
     private void TxtCorreo2KeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCorreo2KeyTyped
         char c = evt.getKeyChar();
-        if ((c < 'a' || c > 'z') && (c < '.' || c > '@')) evt.consume();
+        if ((c < 'a' || c > 'z') && (c < '.' || c > '@')) {
+            evt.consume();
+        }
     }//GEN-LAST:event_TxtCorreo2KeyTyped
 
     private void TxtNombreKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtNombreKeyTyped
         char c = evt.getKeyChar();
-        if ((c < 'a' || c > 'z') && (c != KeyEvent.VK_SPACE) ) evt.consume();
+        if ((c < 'a' || c > 'z') && (c != KeyEvent.VK_SPACE)) {
+            evt.consume();
+        }
     }//GEN-LAST:event_TxtNombreKeyTyped
 
     private void TxtApellidoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtApellidoKeyTyped
         char c = evt.getKeyChar();
-        if ((c < 'a' || c > 'z') && (c != KeyEvent.VK_SPACE) ) evt.consume();
+        if ((c < 'a' || c > 'z') && (c != KeyEvent.VK_SPACE)) {
+            evt.consume();
+        }
     }//GEN-LAST:event_TxtApellidoKeyTyped
 
     private void TxtIdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtIdKeyTyped
         char c = evt.getKeyChar();
-        if(Character.isLetter(c)) { 
-            getToolkit().beep(); 
-            evt.consume(); 
+        if (Character.isLetter(c)) {
+            getToolkit().beep();
+            evt.consume();
         }
     }//GEN-LAST:event_TxtIdKeyTyped
 
     private void TxtTelefonoKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtTelefonoKeyTyped
         char c = evt.getKeyChar();
-        if(Character.isLetter(c)) { 
-            getToolkit().beep(); 
-            evt.consume(); 
+        if (Character.isLetter(c)) {
+            getToolkit().beep();
+            evt.consume();
         }
     }//GEN-LAST:event_TxtTelefonoKeyTyped
 
@@ -278,7 +307,7 @@ public class RegistrarCliente extends javax.swing.JFrame {
     private void TxtCorreoKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_TxtCorreoKeyReleased
         String correo = TxtCorreo.getText();
         String email = "";
-        
+
         for (int x = 0; x < correo.length(); x++) {
             if (correo.charAt(x) == '@') {
                 for (int i = x; i < correo.length(); i++) {
@@ -289,14 +318,14 @@ public class RegistrarCliente extends javax.swing.JFrame {
         }
         if (correo.length() > 10) {
             if (email.equals("@gmail.com") || email.equals("@hotmail.com")
-                    || email.equals("@yahoo.com") || email.equals("@hotmail.es") 
+                    || email.equals("@yahoo.com") || email.equals("@hotmail.es")
                     || email.equals("@outlook.com")) {
                 TxtCorreo.setBackground(Color.decode("#BCEE68"));
                 TxtCorreo2.requestFocus();
-            }else{
-               TxtCorreo.setBackground(Color.decode("#F9A28F"));
+            } else {
+                TxtCorreo.setBackground(Color.decode("#F9A28F"));
             }
-        }else{
+        } else {
             TxtCorreo.setBackground(Color.decode("#F9A28F"));
         }
     }//GEN-LAST:event_TxtCorreoKeyReleased
@@ -305,7 +334,7 @@ public class RegistrarCliente extends javax.swing.JFrame {
         String correo2 = TxtCorreo2.getText();
         String correo1 = TxtCorreo.getText();
         String email = "";
-        
+
         for (int x = 0; x < correo2.length(); x++) {
             if (correo2.charAt(x) == '@') {
                 for (int i = x; i < correo2.length(); i++) {
@@ -316,19 +345,19 @@ public class RegistrarCliente extends javax.swing.JFrame {
         }
         if (correo2.length() > 10) {
             if (email.equals("@gmail.com") || email.equals("@hotmail.com")
-                    || email.equals("@yahoo.com") || email.equals("@hotmail.es") 
+                    || email.equals("@yahoo.com") || email.equals("@hotmail.es")
                     || email.equals("@outlook.com")) {
                 if (correo1.equals(correo2)) {
                     TxtCorreo2.setBackground(Color.decode("#BCEE68"));
                     BtnRegistrar.setEnabled(true);
-                }else{
+                } else {
                     BtnRegistrar.setEnabled(false);
                     TxtCorreo2.setBackground(Color.decode("#F9A28F"));
                 }
-            }else{
-               TxtCorreo2.setBackground(Color.decode("#F9A28F"));
+            } else {
+                TxtCorreo2.setBackground(Color.decode("#F9A28F"));
             }
-        }else{
+        } else {
             TxtCorreo2.setBackground(Color.decode("#F9A28F"));
         }
     }//GEN-LAST:event_TxtCorreo2KeyReleased
@@ -346,7 +375,7 @@ public class RegistrarCliente extends javax.swing.JFrame {
                     caracteres[i + 1] = Character.toUpperCase(caracteres[i + 1]);
                 }
             }
-            String nuevo =  new String(caracteres);
+            String nuevo = new String(caracteres);
             TxtNombre.setText(nuevo);
         }
     }//GEN-LAST:event_TxtNombreKeyReleased
@@ -364,7 +393,7 @@ public class RegistrarCliente extends javax.swing.JFrame {
                     caracteres[i + 1] = Character.toUpperCase(caracteres[i + 1]);
                 }
             }
-            String nuevo =  new String(caracteres);
+            String nuevo = new String(caracteres);
             TxtApellido.setText(nuevo);
         }
     }//GEN-LAST:event_TxtApellidoKeyReleased

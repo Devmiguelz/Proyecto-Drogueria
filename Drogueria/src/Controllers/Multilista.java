@@ -46,6 +46,23 @@ public class Multilista {
         return null;
     }
 
+    public int  UltimoHijo(int padrecodigo) {
+        NodoDrogueria temp = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q;
+        if (temp != null) {
+            q = temp.hijo;
+            while (q != null) {
+                if (q.sig == null) {
+                    return q.id_cliente;
+                }
+                q = q.sig;
+            }
+        }
+        return 0;
+    }
+
+    
+
     public NodoDrogueria BuscarPadre(int padrecodigo) {
         NodoDrogueria temp = raiz;
         while (temp != null) {
@@ -266,7 +283,7 @@ public class Multilista {
             ResultSet rs = st.executeQuery(sql);
             if (rs.next()) {
                 hijo.id_empresa = rs.getInt("id_empresa");
-                hijo.nombre =  rs.getString("nombre");
+                hijo.nombre = rs.getString("nombre");
                 hijo.nit = rs.getString("nit");
                 hijo.direccion = rs.getString("direccion");
                 hijo.telefono = Long.parseLong(rs.getString("telefono"));
@@ -277,8 +294,8 @@ public class Multilista {
             System.out.println("Error :" + ex.getMessage());
         }
     }
-    
-    public NodoHijoDrogueria BuscarCliente(int padrecodigo, int id){
+
+    public NodoHijoDrogueria BuscarCliente(int padrecodigo, int id) {
         NodoDrogueria buscar = BuscarPadre(padrecodigo);
         NodoHijoDrogueria q;
         if (buscar != null) {
@@ -292,33 +309,33 @@ public class Multilista {
         }
         return null;
     }
-    
-    public void ImprimirTodo(){
+
+    public void ImprimirTodo() {
         String cad = "";
         NodoDrogueria p = BuscarPadre(3);
         NodoHijoDrogueria q;
-            System.out.println("Padre "+p.nombre+"\n");
-            q = p.hijo;
-            while (q != null) {                
-                cad += "Codigo : "+q.codigo+" "
-                        + "Nombre : "+q.nombre+"  "
-                        + "Cantidad : "+q.cantidad+" "
-                        + "Precio "+q.precio+"  "
-                        + "Estado "+q.estado + " "
-                        + "Nombre : "+q.user+"  "
-                        + "Cantidad : "+q.password+" "
-                        + "Precio "+q.direccion+"  "
-                        + "Estado "+q.stan + " "
-                        + "Cantidad : "+q.nit+" "
-                        + "Precio "+q.id_configuracion+"  "
-                        + "Estado "+q.empleado + " "
-                        + "Nombre : "+q.telefono+"  "
-                        + "Cantidad : "+q.total+" "
-                        + "Precio "+q.cliente+"  "
-                        + "Estado "+q.hora + "\n";
-                cad += "============================================================================\n";
-                q = q.sig;
-            }
+        System.out.println("Padre " + p.nombre + "\n");
+        q = p.hijo;
+        while (q != null) {
+            cad += "Codigo : " + q.codigo + " "
+                    + "Nombre : " + q.nombre + "  "
+                    + "Cantidad : " + q.cantidad + " "
+                    + "Precio " + q.precio + "  "
+                    + "Estado " + q.estado + " "
+                    + "Nombre : " + q.user + "  "
+                    + "Cantidad : " + q.password + " "
+                    + "Precio " + q.direccion + "  "
+                    + "Estado " + q.stan + " "
+                    + "Cantidad : " + q.nit + " "
+                    + "Precio " + q.id_configuracion + "  "
+                    + "Estado " + q.empleado + " "
+                    + "Nombre : " + q.telefono + "  "
+                    + "Cantidad : " + q.total + " "
+                    + "Precio " + q.cliente + "  "
+                    + "Estado " + q.hora + "\n";
+            cad += "============================================================================\n";
+            q = q.sig;
+        }
         System.out.println(cad);
     }
 }

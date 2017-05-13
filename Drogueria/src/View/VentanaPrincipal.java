@@ -5,7 +5,6 @@
  */
 package View;
 
-import static Controllers.Multilista.lista;
 import Model.Empresa;
 import Model.Exportar;
 import Model.Sistema;
@@ -38,7 +37,6 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Cerrar();
         Nombres.setVisible(false);
         Empresa();
-        
     }
 
     private void Cerrar() {
@@ -277,6 +275,11 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
         jMenuItem3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Botones/banca.png"))); // NOI18N
         jMenuItem3.setText("Ventas de Usuario");
+        jMenuItem3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem3ActionPerformed(evt);
+            }
+        });
         MenuConfig.add(jMenuItem3);
 
         jMenuBar1.add(MenuConfig);
@@ -374,6 +377,10 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         new Facturar().setVisible(true);
     }//GEN-LAST:event_ItemFacturarActionPerformed
 
+    private void jMenuItem3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem3ActionPerformed
+        new VentasUsuarios().setVisible(true);
+    }//GEN-LAST:event_jMenuItem3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -407,14 +414,14 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem ItemCerrar;
     private javax.swing.JMenuItem ItemCliente;
-    static javax.swing.JMenu ItemExportar;
+    public static javax.swing.JMenu ItemExportar;
     private javax.swing.JMenuItem ItemFacturar;
     private javax.swing.JMenuItem ItemHistorial;
     public javax.swing.JMenuItem ItemInventario;
     private javax.swing.JMenuItem ItemListaProducto;
     private javax.swing.JMenuItem ItemSalir;
     private javax.swing.JMenuItem ItemSistema;
-    static javax.swing.JMenuItem ItemVerRegistros;
+    public static javax.swing.JMenuItem ItemVerRegistros;
     public static javax.swing.JLabel Lusuario;
     private javax.swing.JMenu MenuArchivos;
     private javax.swing.JMenu MenuClientes;

@@ -5,8 +5,11 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import Model.Cliente;
 import Model.Sistema;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -22,9 +25,9 @@ import javax.swing.UIManager;
  */
 public class NuevoCliente extends javax.swing.JFrame {
 
-    /**
-     * Creates new form NuevoCliente
-     */
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
+
     public NuevoCliente() {
         initComponents();
         setLocationRelativeTo(null);
@@ -32,6 +35,9 @@ public class NuevoCliente extends javax.swing.JFrame {
         setTitle("REGISTRAR CLIENTE");
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/user-1.png")).getImage());
         Cerrar();
+
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
 
     private void Cerrar() {
@@ -275,6 +281,17 @@ public class NuevoCliente extends javax.swing.JFrame {
 
             Cliente cliente = new Cliente(nombre, apellido, id, correo1, telefono);
             cliente.Insertar();
+            
+            hijo.id_usuario = lista.UltimoHijo(2) + 1;
+            hijo.nombre = nombre;
+            hijo.apellido = apellido;
+            hijo.identificacion = id;
+            hijo.correo = correo1;
+            hijo.telefono = telefono;
+
+            lista.InsertarHijo(2, hijo);
+            
+            Facturar.aux = hijo;
             Facturar.BtnActualizar.doClick();
             this.dispose();
             Modal modal = new Modal(new javax.swing.JFrame(), true);
