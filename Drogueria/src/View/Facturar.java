@@ -19,6 +19,7 @@ import java.awt.event.WindowEvent;
 import java.sql.Date;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 import javax.swing.ImageIcon;
@@ -26,6 +27,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
+import org.jdesktop.swingx.autocomplete.AutoCompleteDecorator;
 
 /**
  *
@@ -40,6 +42,7 @@ public class Facturar extends javax.swing.JFrame {
     public static NodoHijoDrogueria aux;
     private NodoHijoDrogueria hijocliente;
     private NodoHijoDrogueria hijoproducto;
+    private ArrayList<Integer> codigos = new ArrayList<>();
 
     public Facturar() {
         initComponents();
@@ -49,6 +52,7 @@ public class Facturar extends javax.swing.JFrame {
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/barcode.png")).getImage());
         Cerrar();
         LLenarComboProductos();
+        AutoCompleteDecorator.decorate(ComboProducto);
         InicioTabla();
         Codigo();
         BtnQuitar.setEnabled(false);
@@ -109,11 +113,12 @@ public class Facturar extends javax.swing.JFrame {
         NodoHijoDrogueria q;
         if (buscar != null) {
             q = buscar.hijo;
-            ComboProducto.addItem("....");
+            ComboProducto.addItem("");
             while (q != null) {
-                Object codigo = q.codigo;
+                Object stan = q.stan;
+                codigos.add(q.codigo);
                 Object nombre = q.nombre;
-                ComboProducto.addItem(nombre.toString().toUpperCase() + " - " + codigo);
+                ComboProducto.addItem(nombre.toString().toUpperCase() + " - " + stan);
                 q = q.sig;
             }
         }
@@ -153,12 +158,7 @@ public class Facturar extends javax.swing.JFrame {
         return cod;
     }
 
-    public void AgregarProducto(String producto, int cantidad) {
-        int pro_codigo = ObtenerCodigo(producto);
-        TablaFactura(pro_codigo, cantidad);
-    }
-
-    public void TablaFactura(int codigo, int cantidad) {
+    public void AgregarProducto(int codigo, int cantidad) {
         int filas = TablaFactura.getRowCount();
         int fila = -1;
         if (filas > 0) {
@@ -377,6 +377,7 @@ public class Facturar extends javax.swing.JFrame {
 
         jPanel1.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
+        ComboProducto.setEditable(true);
         ComboProducto.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 ComboProductoKeyPressed(evt);
@@ -553,11 +554,10 @@ public class Facturar extends javax.swing.JFrame {
         if (ComboProducto.getSelectedIndex() >= 1) {
             Inventario inven = new Inventario();
             int cantidad = (int) SpinnerCant.getValue();
-            String producto = ComboProducto.getSelectedItem().toString();
-            int codigo = ObtenerCodigo(producto);
+            int codigo = codigos.get(ComboProducto.getSelectedIndex() - 1);
 
             if (inven.CantidadProducto(codigo, cantidad)) {
-                AgregarProducto(producto, cantidad);
+                AgregarProducto(codigo, cantidad);
                 ComboProducto.setSelectedIndex(0);
                 SpinnerCant.setValue(1);
                 ComboProducto.requestFocus();
