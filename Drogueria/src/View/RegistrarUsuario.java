@@ -276,7 +276,6 @@ public class RegistrarUsuario extends javax.swing.JFrame {
                     lista.InsertarHijo(3, hijo);
                     
                     this.dispose();
-                    sistema.InsertarHistorial("Ha Registrado un Usuario");
                     Modal modal = new Modal(new javax.swing.JFrame(), true);
                     modal.TxtMensaje.setText("Usuario Registrado");
                     modal.setVisible(true);

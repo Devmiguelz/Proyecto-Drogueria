@@ -109,7 +109,7 @@ public class Usuario {
             pst.executeUpdate();
 
         } catch (Exception e) {
-            System.out.println("Error" + e);
+            System.out.println("Error Insertar" + e);
         }
     }
 

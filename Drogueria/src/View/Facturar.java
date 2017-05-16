@@ -39,6 +39,7 @@ public class Facturar extends javax.swing.JFrame {
      * Creates new form RegistrarFactura
      */
     private float TotalPagar;
+    private float porcentaje;
     public static NodoHijoDrogueria aux;
     private NodoHijoDrogueria hijocliente;
     private NodoHijoDrogueria hijoproducto;
@@ -68,9 +69,12 @@ public class Facturar extends javax.swing.JFrame {
         ComboProducto.setEnabled(false);
         SpinnerCant.setEnabled(false);
         BtnNuevo.setEnabled(true);
+        
+        porcentaje = venta.ObtenerPorcentaje();
     }
     DecimalFormat formato = new DecimalFormat("###,###.##");
     Cliente cliente = new Cliente();
+    Sistema venta = new Sistema();
     DefaultTableModel modelo = new DefaultTableModel();
 
     public final void Codigo() {
@@ -81,13 +85,15 @@ public class Facturar extends javax.swing.JFrame {
         }
         TxtCodigo.setText(codigo);
 
-        Sistema venta = new Sistema();
+        
         TxtIva.setText(String.valueOf(venta.ObtenerIva()));
     }
 
     public void TotalApagar() {
         float iva = ((getTotal() * Float.parseFloat(TxtIva.getText()) / 100.0f));
-        float totalpagar = getTotal() + iva;
+        float descuento = porcentaje * getTotal();
+        TxtDescuento.setText(String.valueOf(formato.format(descuento)));
+        float totalpagar = getTotal() + iva - descuento;
         this.TotalPagar = totalpagar;
         TxtPrecioIva.setText(String.valueOf(formato.format(iva)));
         TxtTotalPagar.setText(String.valueOf(formato.format(totalpagar)));
@@ -274,6 +280,8 @@ public class Facturar extends javax.swing.JFrame {
         TxtTotalPagar = new javax.swing.JTextField();
         Iva = new javax.swing.JLabel();
         TxtPrecioIva = new javax.swing.JTextField();
+        TxtDescuento = new javax.swing.JTextField();
+        Iva1 = new javax.swing.JLabel();
 
         jInternalFrame1.setVisible(true);
 
@@ -340,7 +348,7 @@ public class Facturar extends javax.swing.JFrame {
                 BtnFacturarActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnFacturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 490, -1, 40));
+        getContentPane().add(BtnFacturar, new org.netbeans.lib.awtextra.AbsoluteConstraints(360, 520, -1, 40));
 
         BtnCancelar.setFont(new java.awt.Font("Segoe UI Symbol", 0, 14)); // NOI18N
         BtnCancelar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Botones/error.png"))); // NOI18N
@@ -351,7 +359,7 @@ public class Facturar extends javax.swing.JFrame {
                 BtnCancelarActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 490, -1, 40));
+        getContentPane().add(BtnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 520, -1, 40));
 
         PorcentajeIva.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         PorcentajeIva.setText("% IVA :");
@@ -528,25 +536,34 @@ public class Facturar extends javax.swing.JFrame {
                 BtnActualizarActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 500, -1, -1));
+        getContentPane().add(BtnActualizar, new org.netbeans.lib.awtextra.AbsoluteConstraints(210, 530, -1, -1));
 
         jLabel7.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel7.setText("TOTAL A PAGAR :");
-        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 440, -1, 20));
+        getContentPane().add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 470, -1, 20));
 
         TxtTotalPagar.setEditable(false);
         TxtTotalPagar.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         TxtTotalPagar.setForeground(new java.awt.Color(51, 153, 0));
-        getContentPane().add(TxtTotalPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 440, 115, -1));
+        getContentPane().add(TxtTotalPagar, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 470, 115, -1));
 
         Iva.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         Iva.setText("IVA :");
-        getContentPane().add(Iva, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 410, -1, -1));
+        getContentPane().add(Iva, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 440, -1, -1));
 
         TxtPrecioIva.setEditable(false);
         TxtPrecioIva.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         TxtPrecioIva.setForeground(new java.awt.Color(102, 102, 102));
-        getContentPane().add(TxtPrecioIva, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 410, 115, -1));
+        getContentPane().add(TxtPrecioIva, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 440, 115, -1));
+
+        TxtDescuento.setEditable(false);
+        TxtDescuento.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        TxtDescuento.setForeground(new java.awt.Color(102, 102, 102));
+        getContentPane().add(TxtDescuento, new org.netbeans.lib.awtextra.AbsoluteConstraints(440, 410, 115, -1));
+
+        Iva1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        Iva1.setText("DESCUENTO :");
+        getContentPane().add(Iva1, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 410, -1, -1));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -840,10 +857,12 @@ public class Facturar extends javax.swing.JFrame {
     private javax.swing.JButton BtnSeleccionar;
     public static javax.swing.JComboBox<String> ComboProducto;
     private javax.swing.JLabel Iva;
+    private javax.swing.JLabel Iva1;
     private javax.swing.JLabel PorcentajeIva;
     public static javax.swing.JSpinner SpinnerCant;
     public static javax.swing.JTable TablaFactura;
     public static javax.swing.JTextField TxtCodigo;
+    private javax.swing.JTextField TxtDescuento;
     private javax.swing.JTextField TxtIdeCliente;
     private javax.swing.JTextField TxtIva;
     private javax.swing.JTextField TxtPrecioIva;

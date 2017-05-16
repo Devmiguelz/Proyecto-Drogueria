@@ -129,6 +129,21 @@ public class Sistema {
         }
         return Iva;
     }
+    
+    public float ObtenerPorcentaje() {
+        NodoDrogueria buscar = lista.BuscarPadre(4);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.descuento == 1) {
+                    return (q.porcentaje/100);
+                }
+                q = q.sig;
+            }
+        }
+        return 0f;
+    }
 
     public void InsertarHistorial(String mensaje) {
         Calendar date;
