@@ -282,7 +282,7 @@ public class NuevoCliente extends javax.swing.JFrame {
             Cliente cliente = new Cliente(nombre, apellido, id, correo1, telefono);
             cliente.Insertar();
             
-            hijo.id_usuario = lista.UltimoHijo(2) + 1;
+            hijo.id_usuario = lista.UltimoHijoCliente(2) + 1;
             hijo.nombre = nombre;
             hijo.apellido = apellido;
             hijo.identificacion = id;

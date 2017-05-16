@@ -274,12 +274,13 @@ public class ListaInventario extends javax.swing.JFrame {
         if (fila >= 0) {
             int codigo = Integer.parseInt(TablaInventario.getValueAt(fila, 0).toString());
             String nombre = TablaInventario.getValueAt(fila, 1).toString();
-            int cant = (int) Integer.parseInt(TablaInventario.getValueAt(fila, 2).toString());
-            float precio = Float.parseFloat(TablaInventario.getValueAt(fila, 3).toString());
+            String stan = TablaInventario.getValueAt(fila, 2).toString();
+            int cant = (int) Integer.parseInt(TablaInventario.getValueAt(fila, 3).toString());
+            float precio = Float.parseFloat(TablaInventario.getValueAt(fila, 4).toString());
             Model.Inventario inventario = new Model.Inventario();
             int estado = inventario.EstadoProducto(codigo);
             RegistrarProducto producto = new RegistrarProducto();
-            producto.Datos(codigo, nombre, cant, precio, estado);
+            producto.Datos(codigo, nombre, stan, cant, precio, estado);
             producto.setTitle("ACTUALIZAR DATOS");
             producto.BtnAgregar.setText("Actualizar");
             Sistema sistema = new Sistema();

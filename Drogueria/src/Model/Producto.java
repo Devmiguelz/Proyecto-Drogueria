@@ -24,6 +24,7 @@ public class Producto {
 
     private int codigo;
     private String descripcion;
+    private String stan;
     private int cantidad;
     private float precio;
     private int estado;
@@ -35,9 +36,10 @@ public class Producto {
         padre = new NodoDrogueria();
     }
 
-    public Producto(int codigo, String descripcion, int cantidad, float precio, int estado) {
+    public Producto(int codigo, String descripcion, String stan, int cantidad, float precio, int estado) {
         this.codigo = codigo;
         this.descripcion = descripcion;
+        this.stan = stan;
         this.cantidad = cantidad;
         this.precio = precio;
         this.estado = estado;
@@ -57,6 +59,14 @@ public class Producto {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+    
+    public String getStan() {
+        return stan;
+    }
+
+    public void setStan(String stan) {
+        this.stan = stan;
     }
 
     public int getCantidad() {
@@ -90,14 +100,15 @@ public class Producto {
     public void Insertar() {
         try {
             PreparedStatement pst = cn.prepareStatement("INSERT INTO productos "
-                    + "(cod_producto,descripcion,stock,precio,estado)"
-                    + "VALUES (?,?,?,?,?)");
+                    + "(cod_producto,descripcion,stock,precio,estado,stan)"
+                    + "VALUES (?,?,?,?,?,?)");
 
             pst.setInt(1, getCodigo());
             pst.setString(2, getDescripcion());
             pst.setInt(3, getCantidad());
             pst.setFloat(4, getPrecio());
             pst.setFloat(5, getEstado());
+            pst.setString(6, getStan());
             pst.executeUpdate();
 
         } catch (Exception e) {
@@ -123,7 +134,8 @@ public class Producto {
                     + " descripcion ='" + getDescripcion() + "',"
                     + " stock ='" + getCantidad() + "',"
                     + " precio ='" + getPrecio() + "', "
-                    + " estado ='" + getEstado() + "' "
+                    + " estado ='" + getEstado() + "', "
+                    + " stan ='" + getStan()+ "' "
                     + " WHERE cod_producto ='" + codigo + "' ");
             pst.executeUpdate();
         } catch (Exception e) {
@@ -135,10 +147,11 @@ public class Producto {
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Codigo");
         modelo.addColumn("Descripcion");
+        modelo.addColumn("Stan");
         modelo.addColumn("Cantidad");
         modelo.addColumn("Precio");
         TablaProducto.setModel(modelo);
-        int[] anchos = {20, 90, 20, 20};
+        int[] anchos = {20, 90, 20, 20, 20};
         for (int i = 0; i < TablaProducto.getColumnCount(); i++) {
             TablaProducto.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
@@ -147,15 +160,16 @@ public class Producto {
         String filtro = "" + nombre + "_%";
         String sql = "SELECT * FROM productos WHERE descripcion LIKE " + '"' + filtro + '"';
 
-        String[] datos = new String[4];
+        String[] datos = new String[5];
         try {
             PreparedStatement pst = cn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery(sql);
             while (rs.next()) {
                 datos[0] = rs.getString(1);
                 datos[1] = rs.getString(2);
-                datos[2] = rs.getString(3);
-                datos[3] = rs.getString(4);
+                datos[2] = rs.getString(6);
+                datos[3] = rs.getString(3);
+                datos[4] = rs.getString(4);
                 modelo.addRow(datos);
             }
             TablaProducto.setModel(modelo);

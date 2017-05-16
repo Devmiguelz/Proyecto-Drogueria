@@ -46,7 +46,7 @@ public class Multilista {
         return null;
     }
 
-    public int  UltimoHijo(int padrecodigo) {
+    public int  UltimoHijoCliente(int padrecodigo) {
         NodoDrogueria temp = BuscarPadre(padrecodigo);
         NodoHijoDrogueria q;
         if (temp != null) {
@@ -61,7 +61,20 @@ public class Multilista {
         return 0;
     }
 
-    
+    public int  UltimoHijoUsuario(int padrecodigo) {
+        NodoDrogueria temp = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q;
+        if (temp != null) {
+            q = temp.hijo;
+            while (q != null) {
+                if (q.sig == null) {
+                    return q.id_usuario;
+                }
+                q = q.sig;
+            }
+        }
+        return 0;
+    }    
 
     public NodoDrogueria BuscarPadre(int padrecodigo) {
         NodoDrogueria temp = raiz;
@@ -73,14 +86,14 @@ public class Multilista {
         }
         return null;
     }
-
-    public NodoHijoDrogueria BuscarHijo(int padrecodigo, int hijocodigo) {
-        NodoDrogueria buscar = BuscarPadre(padrecodigo);
+    
+    public NodoHijoDrogueria BuscarUsuario(int id_user) {
+        NodoDrogueria buscar = BuscarPadre(3);
         NodoHijoDrogueria q;
         if (buscar != null) {
             q = buscar.hijo;
             while (q != null) {
-                if (q.codigo == hijocodigo) {
+                if (q.id_usuario == id_user) {
                     return q;
                 }
                 q = q.sig;
@@ -89,14 +102,61 @@ public class Multilista {
         return null;
     }
 
-    public NodoHijoDrogueria Anterior(int padrecodigo, int hijocodigo) {
+    public NodoHijoDrogueria BuscarCliente(long ide) {
+        NodoDrogueria buscar = BuscarPadre(2);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.identificacion == ide) {
+                    return q;
+                }
+                q = q.sig;
+            }
+        }
+        return null;
+    }
+    
+    public NodoHijoDrogueria BuscarProducto(int codigo) {
+        NodoDrogueria buscar = BuscarPadre(1);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.codigo == codigo) {
+                    return q;
+                }
+                q = q.sig;
+            }
+        }
+        return null;
+    }
+
+    public NodoHijoDrogueria AnteriorCliente(int padrecodigo, int ide) {
         NodoDrogueria buscar = BuscarPadre(padrecodigo);
         NodoHijoDrogueria q;
         NodoHijoDrogueria ant = null;
         if (buscar != null) {
             q = buscar.hijo;
             while (q != null) {
-                if (q.codigo == hijocodigo) {
+                if (q.identificacion == ide) {
+                    return ant;
+                }
+                ant = q;
+                q = q.sig;
+            }
+        }
+        return null;
+    }
+    
+    public NodoHijoDrogueria AnteriorUsuario(int padrecodigo, int ide) {
+        NodoDrogueria buscar = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q;
+        NodoHijoDrogueria ant = null;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.id_usuario == ide) {
                     return ant;
                 }
                 ant = q;
@@ -143,16 +203,101 @@ public class Multilista {
         }
     }
 
-    public void Eliminar(int padrecodigo, int hijocodigo) {
+    public void EliminarCliente(int padrecodigo, int ide) {
         NodoDrogueria buscar = BuscarPadre(padrecodigo);
-        NodoHijoDrogueria q = BuscarHijo(padrecodigo, hijocodigo);
-        NodoHijoDrogueria ant = Anterior(padrecodigo, hijocodigo);
+        NodoHijoDrogueria q = BuscarCliente(ide);
+        NodoHijoDrogueria ant = AnteriorCliente(padrecodigo, ide);
         if (buscar != null) {
             if (buscar.hijo == q) {
                 buscar.hijo = q.sig;
             } else {
                 ant.sig = q.sig;
             }
+        } else {
+            JOptionPane.showMessageDialog(null, "Error no existe el Padre");
+        }
+    }
+    
+    public void EliminarUsuario(int padrecodigo, int ide) {
+        NodoDrogueria buscar = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q = BuscarUsuario(ide);
+        NodoHijoDrogueria ant = AnteriorUsuario(padrecodigo, ide);
+        if (buscar != null) {
+            if (buscar.hijo == q) {
+                buscar.hijo = q.sig;
+            } else {
+                ant.sig = q.sig;
+            }
+        } else {
+            JOptionPane.showMessageDialog(null, "Error no existe el Padre");
+        }
+    }
+    
+    public void ActualizarCliente(int padrecodigo, NodoHijoDrogueria p) {
+        NodoDrogueria buscar = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q = BuscarCliente(p.identificacion);
+        if (buscar != null) {
+            q.nombre = p.nombre;
+            q.apellido = p.apellido;
+            q.identificacion = p.identificacion;
+            q.correo = p.correo;
+            q.telefono = p.telefono;
+        } else {
+            JOptionPane.showMessageDialog(null, "Error no existe el Padre");
+        }
+    }
+    
+    public void ActualizarUsuario(int padrecodigo, NodoHijoDrogueria p) {
+        NodoDrogueria buscar = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q = BuscarUsuario(p.id_usuario);
+        if (buscar != null) {
+            q.nombre = p.nombre;
+            q.user = p.user;
+            q.password = p.password;
+            q.tipo = p.tipo;
+        } else {
+            JOptionPane.showMessageDialog(null, "Error no existe el Padre");
+        }
+    }
+    
+    public void ActualizarDatosEmpresa(NodoHijoDrogueria p) {
+        NodoDrogueria buscar = BuscarPadre(6);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            q.nombre = p.nombre;
+            q.nit = p.nit;
+            q.direccion = p.direccion;
+            q.telefono = p.telefono;
+            q.correo = p.correo;
+        } else {
+            JOptionPane.showMessageDialog(null, "Error no existe el Padre");
+        }
+    }
+    
+    public void ActualizarDatosSistema(NodoHijoDrogueria p) {
+        NodoDrogueria buscar = BuscarPadre(4);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            q.id_venta = p.id_venta;
+            q.iva = p.iva;
+            q.descuento = p.descuento;
+            q.porcentaje = p.porcentaje;
+        } else {
+            JOptionPane.showMessageDialog(null, "Error no existe el Padre");
+        }
+    }
+    
+    public void ActualizarProducto(int padrecodigo, NodoHijoDrogueria p) {
+        NodoDrogueria buscar = BuscarPadre(padrecodigo);
+        NodoHijoDrogueria q = BuscarProducto(p.codigo);
+        if (buscar != null) {
+            q.nombre = p.nombre;
+            q.cantidad = p.cantidad;
+            q.precio = p.precio;
+            q.estado = p.estado;
+            q.stan = p.stan;
         } else {
             JOptionPane.showMessageDialog(null, "Error no existe el Padre");
         }
@@ -246,7 +391,7 @@ public class Multilista {
             Statement consult = cn.createStatement();
             ResultSet rs = consult.executeQuery(sql);
             if (rs.next()) {
-                hijo.id_configuracion = Integer.parseInt(rs.getString(1));
+                hijo.id_venta = Integer.parseInt(rs.getString(1));
                 hijo.iva = Float.parseFloat(rs.getString(2));
                 hijo.descuento = Integer.parseInt(rs.getString(3));
                 hijo.porcentaje = Float.parseFloat(rs.getString(4));
@@ -327,7 +472,7 @@ public class Multilista {
                     + "Precio " + q.direccion + "  "
                     + "Estado " + q.stan + " "
                     + "Cantidad : " + q.nit + " "
-                    + "Precio " + q.id_configuracion + "  "
+                    + "Precio " + q.id_venta + "  "
                     + "Estado " + q.empleado + " "
                     + "Nombre : " + q.telefono + "  "
                     + "Cantidad : " + q.total + " "

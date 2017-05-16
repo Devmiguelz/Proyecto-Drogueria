@@ -80,17 +80,18 @@ public class Usuario {
     Connection cn = conexion.conexion();
 
     public int ObtenerId(String user) {
-
-        String sql = "SELECT id_usuario FROM  usuarios "
-                + " WHERE user ='" + user + "' ";
-        try {
-            Statement consult = cn.createStatement();
-            ResultSet rs = consult.executeQuery(sql);
-            if (rs.next()) {
-                id = rs.getInt(1);
+        
+        NodoDrogueria buscar = lista.BuscarPadre(3);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                if (q.user.equalsIgnoreCase(user)) {
+                    id = q.id_usuario;
+                    break;
+                }
+                q = q.sig;
             }
-        } catch (SQLException ex) {
-            System.out.println("Error : " + ex.getMessage());
         }
         return id;
     }

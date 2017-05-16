@@ -6,6 +6,8 @@
 package Model;
 
 import Conexion.Conexion;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import static View.ListaInventario.TablaInventario;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -19,9 +21,13 @@ import javax.swing.table.DefaultTableModel;
  * @author 201611277427
  */
 public class Inventario extends Producto{
+    
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
    
     public Inventario() {
-        
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
     
     //Instancia Conexion BD
@@ -32,11 +38,12 @@ public class Inventario extends Producto{
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Codigo");
         modelo.addColumn("Descripcion");
+        modelo.addColumn("Stan");
         modelo.addColumn("Cantidad");
         modelo.addColumn("Precio");
         modelo.addColumn("Estado");
         TablaInventario.setModel(modelo);
-        int[] anchos = {80, 80, 20,20,20};
+        int[] anchos = {80, 80,20, 20, 20,20};
         for (int i = 0; i < TablaInventario.getColumnCount(); i++) {
             TablaInventario.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
@@ -45,16 +52,17 @@ public class Inventario extends Producto{
         String filtro = "" + codigo + "_%";
         String sql = "SELECT * FROM productos WHERE cod_producto LIKE " + '"' + filtro + '"';
 
-        String[] datos = new String[5];
+        String[] datos = new String[6];
         try {
             PreparedStatement pst = cn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery(sql);
             while (rs.next()) {
                 datos[0] = rs.getString(1);
                 datos[1] = rs.getString(2);
-                datos[2] = rs.getString(3);
-                datos[3] = rs.getString(4);
-                datos[4] = rs.getString(5);
+                datos[2] = rs.getString(6);
+                datos[3] = rs.getString(3);
+                datos[4] = rs.getString(4);
+                datos[5] = rs.getString(5);
                 modelo.addRow(datos);
             }
             TablaInventario.setModel(modelo);
@@ -67,11 +75,12 @@ public class Inventario extends Producto{
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Codigo");
         modelo.addColumn("Descripcion");
+        modelo.addColumn("Stan");
         modelo.addColumn("Cantidad");
         modelo.addColumn("Precio");
         modelo.addColumn("Estado");
         TablaInventario.setModel(modelo);
-        int[] anchos = {80, 80, 20,20,20};
+        int[] anchos = {80, 80,20, 20, 20,20};
         for (int i = 0; i < TablaInventario.getColumnCount(); i++) {
             TablaInventario.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
@@ -80,16 +89,17 @@ public class Inventario extends Producto{
         String filtro = "" + nombre + "_%";
         String sql = "SELECT * FROM productos WHERE descripcion LIKE " + '"' + filtro + '"';
 
-        String[] datos = new String[5];
+        String[] datos = new String[6];
         try {
             PreparedStatement pst = cn.prepareStatement(sql);
             ResultSet rs = pst.executeQuery(sql);
             while (rs.next()) {
                 datos[0] = rs.getString(1);
                 datos[1] = rs.getString(2);
-                datos[2] = rs.getString(3);
-                datos[3] = rs.getString(4);
-                datos[4] = rs.getString(5);
+                datos[2] = rs.getString(6);
+                datos[3] = rs.getString(3);
+                datos[4] = rs.getString(4);
+                datos[5] = rs.getString(5);
                 modelo.addRow(datos);
             }
             TablaInventario.setModel(modelo);
@@ -140,11 +150,12 @@ public class Inventario extends Producto{
         DefaultTableModel modelo = new DefaultTableModel();
         modelo.addColumn("Codigo");
         modelo.addColumn("Descripcion");
+        modelo.addColumn("Stan");
         modelo.addColumn("Cantidad");
         modelo.addColumn("Precio");
         modelo.addColumn("Estado");
         TablaInventario.setModel(modelo);
-        int[] anchos = {80, 80, 20, 20, 20};
+        int[] anchos = {80, 80, 20, 20, 20, 20};
         for (int i = 0; i < TablaInventario.getColumnCount(); i++) {
             TablaInventario.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
@@ -156,16 +167,17 @@ public class Inventario extends Producto{
             sql = "SELECT * FROM productos ORDER BY "+orden+" ASC";
         }
         
-        String[] datos = new String[5];
+        String[] datos = new String[6];
         try {
             Statement st = cn.createStatement();
             ResultSet rs = st.executeQuery(sql);
             while (rs.next()) {
                 datos[0] = rs.getString(1);
                 datos[1] = rs.getString(2);
-                datos[2] = rs.getString(3);
-                datos[3] = rs.getString(4);
-                datos[4] = rs.getString(5);
+                datos[2] = rs.getString(6);
+                datos[3] = rs.getString(3);
+                datos[4] = rs.getString(4);
+                datos[5] = rs.getString(5);
                 modelo.addRow(datos);
             }
             TablaInventario.setModel(modelo);

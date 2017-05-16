@@ -224,7 +224,7 @@ public class RegistrarCliente extends javax.swing.JFrame {
                 Cliente cliente = new Cliente(nombre, apellido, id, correo1, telefono);
                 cliente.Insertar();
                 
-                hijo.id_usuario = lista.UltimoHijo(2)+1;
+                hijo.id_cliente = lista.UltimoHijoCliente(2)+1;
                 hijo.nombre = nombre;
                 hijo.apellido = apellido;
                 hijo.identificacion = id;
@@ -241,6 +241,14 @@ public class RegistrarCliente extends javax.swing.JFrame {
             } else {
                 Cliente cliente = new Cliente(nombre, apellido, id, correo1, telefono);
                 cliente.Actualizar(Id);
+                
+                hijo.nombre = nombre;
+                hijo.apellido = apellido;
+                hijo.identificacion = Id;
+                hijo.correo = correo1;
+                hijo.telefono = telefono;
+                lista.ActualizarCliente(2, hijo);
+                
                 Modal modal = new Modal(new javax.swing.JFrame(), true);
                 modal.TxtMensaje.setText("Datos Actualizados");
                 modal.setVisible(true);

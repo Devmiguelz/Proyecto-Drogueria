@@ -32,7 +32,7 @@ public class Configuracion extends javax.swing.JFrame {
      */
     private int IdEmpresa;
     private int IdVenta;
-    
+
     private NodoHijoDrogueria hijo;
     private NodoDrogueria padre;
 
@@ -59,7 +59,7 @@ public class Configuracion extends javax.swing.JFrame {
 
         BtnGuardarE.setEnabled(false);
         BtnGuardarV.setEnabled(false);
-        
+
         padre = new NodoDrogueria();
         hijo = new NodoHijoDrogueria();
     }
@@ -94,6 +94,7 @@ public class Configuracion extends javax.swing.JFrame {
         if (buscar != null) {
             q = buscar.hijo;
             while (q != null) {
+                IdEmpresa = q.id_empresa;
                 TxtNombre.setText(q.nombre);
                 TxtNit.setText(q.nit);
                 TxtDireccion.setText(q.direccion);
@@ -110,7 +111,7 @@ public class Configuracion extends javax.swing.JFrame {
         if (buscar != null) {
             q = buscar.hijo;
             while (q != null) {
-                IdVenta = q.id_configuracion;
+                IdVenta = q.id_venta;
                 TxtIva.setText(String.valueOf(q.iva));
                 int desc = q.descuento;
                 if (desc == 1) {
@@ -121,7 +122,7 @@ public class Configuracion extends javax.swing.JFrame {
                 TxtPor.setText(String.valueOf(q.porcentaje));
                 q = q.sig;
             }
-        }                
+        }
     }
 
     /**
@@ -538,8 +539,8 @@ public class Configuracion extends javax.swing.JFrame {
 
                 int fil = TablaUsuario.getSelectedRow();
                 String user = TablaUsuario.getValueAt(fil, 1).toString();
-                String pass = TablaUsuario.getValueAt(fil, 2).toString();
                 usuario.Eliminar(usuario.ObtenerId(user));
+                lista.EliminarUsuario(3,usuario.ObtenerId(user));
                 usuario.TablaUsuario();
                 JOptionPane.showMessageDialog(rootPane, "Eliminado");
                 Sistema sistema = new Sistema();
@@ -607,6 +608,17 @@ public class Configuracion extends javax.swing.JFrame {
 
             Empresa empresa = new Empresa(nombre, nit, direccion, telefono, correo);
             empresa.Actualizar(IdEmpresa);
+
+            hijo = new NodoHijoDrogueria();
+            hijo.id_empresa = IdEmpresa;
+            hijo.nombre = nombre;
+            hijo.nit = nit;
+            hijo.direccion = direccion;
+            hijo.telefono = Long.parseLong(telefono);
+            hijo.correo = correo;
+            lista.ActualizarDatosEmpresa(hijo);
+
+            DatosEmpresa();
             Sistema sistema = new Sistema();
             sistema.InsertarHistorial("Ha Actualizado los datos de la Empresa");
             TxtNombre.setEditable(false);
@@ -654,12 +666,19 @@ public class Configuracion extends javax.swing.JFrame {
                 por = 0;
             }
             Model.Sistema venta = new Model.Sistema(iva, des, por);
+            hijo = new NodoHijoDrogueria();
+            hijo.id_venta = IdVenta;
+            hijo.iva = iva;
+            hijo.descuento = des;
+            hijo.porcentaje = por;
             if (venta.RegistroVenta()) {
+                lista.ActualizarDatosSistema(hijo);
                 venta.Actualizar(IdVenta);
                 Sistema sistema = new Sistema();
                 sistema.InsertarHistorial("Ha Actualizado las Ventas");
             } else {
                 venta.Insertar();
+                lista.InsertarHijo(4, hijo);
             }
             CheckDesc.setEnabled(false);
             TxtIva.setEditable(false);

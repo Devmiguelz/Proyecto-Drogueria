@@ -317,6 +317,11 @@ public class Facturar extends javax.swing.JFrame {
                 TablaFacturaMouseClicked(evt);
             }
         });
+        TablaFactura.addPropertyChangeListener(new java.beans.PropertyChangeListener() {
+            public void propertyChange(java.beans.PropertyChangeEvent evt) {
+                TablaFacturaPropertyChange(evt);
+            }
+        });
         TablaFactura.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 TablaFacturaKeyPressed(evt);
@@ -632,7 +637,7 @@ public class Facturar extends javax.swing.JFrame {
             factura.Insertar();
             factura.DetalleFactura(Codigos, Cantidades);
             factura.MenosProducto(Codigos, Cantidades);
-            
+
             aux = new NodoHijoDrogueria();
             aux.codigo = codigo;
             aux.cliente = clientes;
@@ -769,6 +774,27 @@ public class Facturar extends javax.swing.JFrame {
         Total();
         TotalApagar();
     }//GEN-LAST:event_TablaFacturaKeyPressed
+
+    private void TablaFacturaPropertyChange(java.beans.PropertyChangeEvent evt) {//GEN-FIRST:event_TablaFacturaPropertyChange
+        if (TablaFactura.getRowCount() > 0) {
+            int fila = TablaFactura.getSelectedRow();
+            if (fila >= 0) {
+                int cant = 0;
+                try {
+                    cant = Integer.parseInt(TablaFactura.getValueAt(fila, 3).toString());
+                } catch (Exception e) {
+                }
+                if (cant > 0) {
+                    float precio = Float.parseFloat(TablaFactura.getValueAt(fila, 4).toString());
+                    TablaFactura.setValueAt(String.valueOf((cant * precio)), fila, 5);
+                    Total();
+                    TotalApagar();
+                }
+            }
+            Total();
+            TotalApagar();
+        }
+    }//GEN-LAST:event_TablaFacturaPropertyChange
 
     /**
      * @param args the command line arguments

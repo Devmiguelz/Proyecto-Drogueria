@@ -19,8 +19,8 @@ public class TablaInventario extends JTable{
     @Override
     public Component prepareRenderer(TableCellRenderer renderer , int fila , int columna){
         Component component = super.prepareRenderer(renderer, fila, columna);
-        String cantidad = getValueAt(fila,2).toString();
-        String estado = getValueAt(fila,4).toString();
+        String cantidad = getValueAt(fila,3).toString();
+        String estado = getValueAt(fila,5).toString();
         if (!cantidad.equals("") && !estado.equals("")) {
             int cant = Integer.parseInt(cantidad);
             int esta = Integer.parseInt(estado);

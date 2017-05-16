@@ -6,6 +6,9 @@
 package Model;
 
 import Conexion.Conexion;
+import static Controllers.Multilista.lista;
+import NodosMultilista.NodoDrogueria;
+import NodosMultilista.NodoHijoDrogueria;
 import static View.Historial.TablaHistorial;
 import View.Login;
 import java.sql.Connection;
@@ -28,8 +31,12 @@ public class Sistema {
     private int descuento;
     private float porcentaje;
 
+    private NodoHijoDrogueria hijo;
+    private NodoDrogueria padre;
+
     public Sistema() {
-        
+        hijo = new NodoHijoDrogueria();
+        padre = new NodoDrogueria();
     }
 
     public Sistema(float iva, int descuento, float porcentaje) {
@@ -97,36 +104,28 @@ public class Sistema {
 
     public boolean RegistroVenta() {
         boolean valida = false;
-        int cant = 0;
-        String sql = " SELECT * FROM  configuracion ";
-        try {
-            Statement consult = cn.createStatement();
-            ResultSet rs = consult.executeQuery(sql);
-            while (rs.next()) {
-                cant++;
-            }
-            if (cant > 0) {
+        NodoDrogueria buscar = lista.BuscarPadre(4);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
                 valida = true;
-            } else {
-                valida = false;
+                q = q.sig;
             }
-        } catch (Exception ex) {
-            System.out.println("Error :" + ex);
         }
         return valida;
     }
 
     public Float ObtenerIva() {
         float Iva = 0;
-        String sql = " SELECT iva FROM  configuracion ";
-        try {
-            Statement consult = cn.createStatement();
-            ResultSet rs = consult.executeQuery(sql);
-            if (rs.next()) {
-                Iva = rs.getFloat("iva");
+        NodoDrogueria buscar = lista.BuscarPadre(4);
+        NodoHijoDrogueria q;
+        if (buscar != null) {
+            q = buscar.hijo;
+            while (q != null) {
+                Iva = q.iva;
+                q = q.sig;
             }
-        } catch (Exception ex) {
-            System.out.println("Error :" + ex);
         }
         return Iva;
     }
@@ -167,7 +166,7 @@ public class Sistema {
 
     public void ObtenerDias() {
         String fechas[] = new String[CantRegistros()];
-        int Dias[] = new int[CantRegistros()]; 
+        int Dias[] = new int[CantRegistros()];
         int id[] = new int[CantRegistros()];
         int i = 0;
         String sql = " SELECT * FROM  historial ";
@@ -185,10 +184,10 @@ public class Sistema {
         for (int j = 0; j < fechas.length; j++) {
             Dias[j] = CompararFechas.CompararDate(fechas[j]);
         }
-        ActualizarDias(id,Dias);
+        ActualizarDias(id, Dias);
     }
 
-    public void ActualizarDias(int id[],int day[]) {
+    public void ActualizarDias(int id[], int day[]) {
         for (int i = 0; i < day.length; i++) {
             try {
                 PreparedStatement pst = cn.prepareStatement("UPDATE historial "
@@ -200,8 +199,8 @@ public class Sistema {
             }
         }
     }
-    
-    public int CantRegistros(){
+
+    public int CantRegistros() {
         int cant = 0;
         String sql = " SELECT COUNT(*) as total FROM  historial ";
         try {

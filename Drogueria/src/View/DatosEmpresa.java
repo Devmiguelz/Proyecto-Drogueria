@@ -5,8 +5,10 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import Model.Empresa;
 import Model.Sistema;
+import NodosMultilista.NodoHijoDrogueria;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import javax.swing.ImageIcon;
@@ -22,6 +24,9 @@ public class DatosEmpresa extends javax.swing.JFrame {
     /**
      * Creates new form DatosEmpresa
      */
+    
+    private NodoHijoDrogueria hijo;
+    
     public DatosEmpresa() {
         initComponents();
         setLocationRelativeTo(null);
@@ -174,6 +179,15 @@ public class DatosEmpresa extends javax.swing.JFrame {
             
             Empresa empresa = new Empresa(nombre,nit,direccion,telefono,correo);
             empresa.Insertar();
+            hijo = new NodoHijoDrogueria();
+            hijo.id_empresa = 1;
+            hijo.nombre = nombre;
+            hijo.nit = nit;
+            hijo.direccion = direccion;
+            hijo.telefono = Long.parseLong(telefono);
+            hijo.correo = correo;
+            lista.InsertarHijo(6, hijo);
+            
             this.dispose();
             Modal modal = new Modal(new javax.swing.JFrame(), true);
             modal.TxtMensaje.setText("Empresa Registrada");

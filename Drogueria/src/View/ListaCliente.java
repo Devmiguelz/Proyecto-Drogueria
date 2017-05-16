@@ -5,6 +5,7 @@
  */
 package View;
 
+import static Controllers.Multilista.lista;
 import Model.Cliente;
 import Model.Sistema;
 import java.awt.event.WindowAdapter;
@@ -225,6 +226,7 @@ public class ListaCliente extends javax.swing.JFrame {
             int estado = JOptionPane.showConfirmDialog(rootPane, "Desea Eliminar el Cliente", "Comfirmar Eliminar", JOptionPane.YES_NO_OPTION);
             if (estado == 0) {
                 int id = Integer.parseInt(TablaCliente.getValueAt(fila, 2).toString());
+                lista.EliminarCliente(2, id);
                 cliente.Eliminar(id);
                 cliente.TablaCliente();
                 JOptionPane.showMessageDialog(rootPane, "Eliminado");

@@ -229,6 +229,15 @@ public class RegistrarUsuario extends javax.swing.JFrame {
                 if (BtnRegistrar.getText().equals("Registrar")) {
                     Usuario usuario = new Usuario(nombre, user1, password, tipo);;
                     usuario.Insertar();
+                    
+                    hijo = new NodoHijoDrogueria();
+                    hijo.id_usuario = lista.UltimoHijoUsuario(3)+1;
+                    hijo.nombre = nombre;
+                    hijo.user = user1;
+                    hijo.password = password;
+                    hijo.tipo = tipo;
+                    lista.InsertarHijo(3, hijo);
+                    
                     this.dispose();
                     Configuracion.BtnActualizar.doClick();
                     Modal modal = new Modal(new javax.swing.JFrame(), true);
@@ -238,6 +247,15 @@ public class RegistrarUsuario extends javax.swing.JFrame {
                 } else if (BtnRegistrar.getText().equals("Actualizar")) {
                     Usuario usuario = new Usuario(nombre, user1, password, tipo);
                     usuario.Actualizar(usuario.ObtenerId(user));
+                    
+                    hijo = new NodoHijoDrogueria();
+                    hijo.id_usuario = usuario.ObtenerId(user);
+                    hijo.nombre = nombre;
+                    hijo.user = user1;
+                    hijo.password = password;
+                    hijo.tipo = tipo;
+                    lista.ActualizarUsuario(3, hijo);
+                    
                     this.dispose();
                     sistema.InsertarHistorial("Ha Actualizado un Usuario");
                     Configuracion.BtnActualizar.doClick();
@@ -248,9 +266,10 @@ public class RegistrarUsuario extends javax.swing.JFrame {
                     Usuario usuario = new Usuario(nombre, user1, password, tipo);
                     usuario.Insertar();
                     
-                    hijo.id_usuario = lista.UltimoHijo(3)+1;
+                    hijo = new NodoHijoDrogueria();
+                    hijo.id_usuario = lista.UltimoHijoUsuario(3)+1;
                     hijo.nombre = nombre;
-                    hijo.user = user;
+                    hijo.user = user1;
                     hijo.password = password;
                     hijo.tipo = tipo;
 
