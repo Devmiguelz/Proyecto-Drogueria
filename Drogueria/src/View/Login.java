@@ -32,6 +32,7 @@ public class Login extends javax.swing.JFrame {
         setResizable(false);
         TxtNombreUsuario.requestFocus();
         setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/login.png")).getImage());
+        lista.raiz = null;
         lista.CargarPadres();
         lista.CargarUsuario();
         lista.CargarClientes();

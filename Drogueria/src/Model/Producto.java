@@ -195,8 +195,14 @@ public class Producto {
     }
 
     public void TablaProducto() {
-        DefaultTableModel modelo = (DefaultTableModel) TablaProducto.getModel();
-        int[] anchos = {20, 90, 30 ,20, 20};
+        DefaultTableModel modelo = new DefaultTableModel();
+        modelo.addColumn("Codigo");
+        modelo.addColumn("Descripcion");
+        modelo.addColumn("Stan");
+        modelo.addColumn("Cantidad");
+        modelo.addColumn("Precio");
+        TablaProducto.setModel(modelo);
+        int[] anchos = {20, 90, 20, 20, 20};
         for (int i = 0; i < TablaProducto.getColumnCount(); i++) {
             TablaProducto.getColumnModel().getColumn(i).setPreferredWidth(anchos[i]);
         }
