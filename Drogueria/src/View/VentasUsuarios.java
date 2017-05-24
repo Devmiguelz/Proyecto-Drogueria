@@ -7,6 +7,10 @@ package View;
 
 import Model.Factura;
 import Model.Usuario;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
 
@@ -24,12 +28,31 @@ public class VentasUsuarios extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setResizable(false);
         setTitle("FACTURACION");
-        
+        Cerrar();
+        setIconImage(new ImageIcon(getClass().getResource("/Img_Ventanas/user.png")).getImage());
         user.TablaUsuarioVentas();
     }
     
     Usuario user = new Usuario();
     Factura factura = new Factura();
+    
+    private void Cerrar() {
+        try {
+            this.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+            addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosing(WindowEvent e) {
+                    comfirmar();
+                }
+            });
+            this.setVisible(true);
+        } catch (Exception e) {
+        }
+    }
+
+    public void comfirmar() {
+        this.dispose();
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.

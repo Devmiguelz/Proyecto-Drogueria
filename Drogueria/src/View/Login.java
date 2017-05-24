@@ -71,6 +71,9 @@ public class Login extends javax.swing.JFrame {
 
         LabelNombre = new javax.swing.JLabel();
         LabelPass = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
         TxtNombreUsuario = new javax.swing.JTextField();
         BtnIngresar = new javax.swing.JButton();
         TxtPass = new javax.swing.JPasswordField();
@@ -93,6 +96,17 @@ public class Login extends javax.swing.JFrame {
         LabelPass.setText("Contraseña");
         getContentPane().add(LabelPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 90, -1, -1));
 
+        jLabel1.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel1.setText("Drog-Me Sistema de Gestion de Farmacia v1.0");
+        getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 140, -1, -1));
+
+        jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Ventanas/LoginUser.png"))); // NOI18N
+        getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 50, -1, -1));
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Ventanas/LoginPass.png"))); // NOI18N
+        getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 90, -1, -1));
+
         TxtNombreUsuario.setBackground(new java.awt.Color(51, 102, 255));
         TxtNombreUsuario.setFont(new java.awt.Font("Trebuchet MS", 1, 11)); // NOI18N
         TxtNombreUsuario.setForeground(new java.awt.Color(255, 255, 255));
@@ -101,7 +115,7 @@ public class Login extends javax.swing.JFrame {
                 TxtNombreUsuarioKeyTyped(evt);
             }
         });
-        getContentPane().add(TxtNombreUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 50, 146, -1));
+        getContentPane().add(TxtNombreUsuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 50, 146, -1));
 
         BtnIngresar.setBackground(new java.awt.Color(255, 0, 0));
         BtnIngresar.setFont(new java.awt.Font("Malgun Gothic", 1, 11)); // NOI18N
@@ -114,7 +128,7 @@ public class Login extends javax.swing.JFrame {
                 BtnIngresarActionPerformed(evt);
             }
         });
-        getContentPane().add(BtnIngresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(220, 130, 70, 30));
+        getContentPane().add(BtnIngresar, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 70, 70, 30));
 
         TxtPass.setBackground(new java.awt.Color(51, 102, 255));
         TxtPass.setFont(new java.awt.Font("Trebuchet MS", 1, 11)); // NOI18N
@@ -124,7 +138,7 @@ public class Login extends javax.swing.JFrame {
                 TxtPassKeyTyped(evt);
             }
         });
-        getContentPane().add(TxtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 146, -1));
+        getContentPane().add(TxtPass, new org.netbeans.lib.awtextra.AbsoluteConstraints(160, 90, 146, -1));
 
         JlabelCerrar.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         JlabelCerrar.setForeground(new java.awt.Color(255, 255, 255));
@@ -140,15 +154,15 @@ public class Login extends javax.swing.JFrame {
                 JlabelCerrarMouseExited(evt);
             }
         });
-        getContentPane().add(JlabelCerrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(290, 0, 20, 30));
+        getContentPane().add(JlabelCerrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(380, 0, 20, 30));
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 1, 12)); // NOI18N
         jLabel2.setForeground(new java.awt.Color(255, 255, 255));
         jLabel2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Botones/login.png"))); // NOI18N
         getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 0, 70, 40));
 
-        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Ventanas/fondo.jpg"))); // NOI18N
-        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 310, 170));
+        fondo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Img_Ventanas/FondoLogin.png"))); // NOI18N
+        getContentPane().add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 400, 170));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -265,7 +279,10 @@ public class Login extends javax.swing.JFrame {
     private javax.swing.JTextField TxtNombreUsuario;
     private javax.swing.JPasswordField TxtPass;
     private javax.swing.JLabel fondo;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     // End of variables declaration//GEN-END:variables
 
 }

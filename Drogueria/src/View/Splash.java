@@ -42,7 +42,7 @@ public class Splash extends javax.swing.JPanel {
       
         initComponents();
         lblTexto.setForeground(new Color(102, 102, 102));
-        fondo = new ImageIcon(getClass().getResource("/Img_Ventanas/Splash.jpg"));
+        fondo = new ImageIcon(getClass().getResource("/Img_Ventanas/Splash.png"));
         this.setSize(fondo.getIconWidth(), fondo.getIconHeight());
         this.setOpaque(false);
     }
